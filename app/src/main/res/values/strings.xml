@@ -3,5 +3,5 @@
     <string name="load_a_schedule">Load A Schedule</string>
     <string name="create_new_schedule">Create New Schedule</string>
     <string name="uiuc_schedule">UIUC Schedule</string>
-    <string name="would_you_like_to_create_a_new_schedule_or_load_a_previous_one">Would you like to create a new schedule, or load a previous one?</string>
+    <string name="would_you_like_to_create_a_new_schedule_or_load_a_previous_one">Would you like to create a new schedule or load a previous one?</string>
 </resources>
