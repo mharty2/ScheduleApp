@@ -9,4 +9,17 @@
     <string name="your_schedules">Your Schedules</string>
     <string name="brings_user_to_choose_schedule_screen">Brings user to choose schedule screen</string>
     <string name="save_schedule">Save Schedule</string>
+    <string name="subject">Subject</string>
+    <string name="course_number">Course number</string>
+    <string name="add_course">Add Course</string>
+    <string name="name">Name</string>
+    <string name="days">Days</string>
+    <string name="credit_hours">Credit Hours</string>
+    <string name="time">Time</string>
+    <string name="type">Type</string>
+    <string name="add">add</string>
+    <string name="day">Day</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
 </resources>
