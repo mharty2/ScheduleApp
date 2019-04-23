@@ -4,4 +4,9 @@
     <string name="create_new_schedule">Create New Schedule</string>
     <string name="uiuc_schedule">UIUC Schedule</string>
     <string name="would_you_like_to_create_a_new_schedule_or_load_a_previous_one">Would you like to create a new schedule or load a previous one?</string>
+    <string name="starting_location" />
+    <string name="destination" />
+    <string name="your_schedules">Your Schedules</string>
+    <string name="brings_user_to_choose_schedule_screen">Brings user to choose schedule screen</string>
+    <string name="save_schedule">Save Schedule</string>
 </resources>
