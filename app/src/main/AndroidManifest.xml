@@ -9,6 +9,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".mapScreen"></activity>
+        <activity android:name=".loadSchedule" />
+        <activity android:name=".dailySchedule" />
+        <activity android:name=".createSchedule" />
+        <activity android:name=".ChooseSchedule" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
