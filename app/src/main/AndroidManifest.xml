@@ -10,11 +10,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".mapScreen"></activity>
-        <activity android:name=".loadSchedule" />
-        <activity android:name=".dailySchedule" />
-        <activity android:name=".createSchedule" />
-        <activity android:name=".ChooseSchedule" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".loadSchedule"></activity>
+        <activity android:name=".dailySchedule"></activity>
+        <activity android:name=".createSchedule"></activity>
+        <activity android:name=".ChooseSchedule">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

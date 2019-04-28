@@ -27,5 +27,6 @@
     <string name="title_activity_load_schedule">loadSchedule</string>
     <string name="title_activity_map_screen">mapScreen</string>
     <string name="title_activity_course_search">courseSearch</string>
+    <string name="see_mapview">See Map View</string>
 
 </resources>
