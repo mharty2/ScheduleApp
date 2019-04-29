@@ -14,18 +14,8 @@ public class ChooseSchedule extends AppCompatActivity {
         findViewById(R.id.LoadSchedule).setOnClickListener(v -> loadSchedule());
     }
     void createSchedule() {
-
-        /*
-         * In Android we launch another screen using a so-called <em>Intent</em>. The Intent has to be configured
-         * with which Activity we want to launch: in this case GameActivity.class.
-         */
         Intent intent = new Intent(ChooseSchedule.this, createSchedule.class);
-        // Actually start the second Activity, causing that screen to launch.
         startActivity(intent);
-        /*
-         * At that point the SetupActivity is no longer needed and can exit. In Android we do this using finish,
-         * which cleans up and then destroys this activity.
-         */
         finish();
     }
     void loadSchedule() {
