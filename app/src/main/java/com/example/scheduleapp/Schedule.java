@@ -101,14 +101,30 @@ public class Schedule {
         }
     }
 
-    /* private void sortDayLists(List<simplifiedClassData> dayList) {
+    /*private void sortDayLists(List<simplifiedClassData> dayList) {
         List<simplifiedClassData> toSet = new ArrayList<>();
 
         char[] minTime = dayList.get(0).getStart().toCharArray();
-        while(dayList.size() > 0) {
+        while (dayList.size() > 0) {
             for (int i = 1; i < dayList.size(); i++) {
                 char[] currentTime = dayList.get(i).getStart().toCharArray();
                 if (minTime[0] == 1 && currentTime[0] == 1)
+            }
+        }
+    }
+
+    private double to24HourTime(String time) {
+        if (time.charAt(1) == ':') {
+            if (time.charAt(5) == 'A') {
+                return Integer.parseInt(time.substring(0, 1));
+            } else if (time.charAt(5) == 'P' || time.charAt(6) == 'P') {
+                return Integer.parseInt(time.substring(0,1)) + 12;
+            }
+        } else if (time.charAt(2) == ':' ) {
+            if (time.charAt(5) == 'A' || time.charAt(6) == 'A') {
+                return String.get
+            } else if (time.charAt(5) == 'P' || time.charAt(6) == 'P') {
+                return Character.getNumericValue(0) + 12;
             }
         }
     } */
