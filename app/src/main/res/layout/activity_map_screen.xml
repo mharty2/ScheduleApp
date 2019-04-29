@@ -6,10 +6,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v7.widget.ScrollingTabContainerView.TabView
+    <Spinner
+        android:id="@+id/map_spinner_one"
+        android:layout_width="405dp"
+        android:layout_height="45dp"
+        android:layout_marginBottom="8dp"
+        android:prompt="@string/starting_location"
+        app:layout_constraintBottom_toTopOf="@+id/map_spinner_two"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <com.google.android.gms.maps.MapView
         android:id="@+id/mapView"
-        android:layout_width="393dp"
-        android:layout_height="511dp"
+        android:layout_width="386dp"
+        android:layout_height="498dp"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
@@ -18,21 +27,12 @@
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.303" />
+        app:layout_constraintVertical_bias="0.304">
 
-    <Spinner
-        android:id="@+id/map_spinner_one"
-        android:layout_width="405dp"
-        android:layout_height="45dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:prompt="@string/starting_location"
-        app:layout_constraintBottom_toTopOf="@+id/map_spinner_two"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mapView"
-        app:layout_constraintVertical_bias="0.545" />
+    </com.google.android.gms.maps.MapView>
 
     <Spinner
         android:id="@+id/map_spinner_two"
@@ -86,7 +86,7 @@
         app:layout_constraintVertical_bias="0.001" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/backToDailyBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
