@@ -51,7 +51,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.023"
-        tools:text="@android:string/cancel" />
+        android:text="@android:string/cancel" />
 
     <Button
         android:id="@+id/create"
