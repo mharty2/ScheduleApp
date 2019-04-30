@@ -64,8 +64,11 @@ public class CourseSearch extends AppCompatActivity {
     }
 
     void showClasses() {
+        TextView courseList = ((TextView) findViewById(R.id.courseSearchTestTextView));
+        courseList.setText("");
         for (XMLParser.SpecificClassData current : internalClassList) {
-            ((TextView) findViewById(R.id.courseSearchRecycler)).append(current.printAll());
+            courseList.append("\n");
+            courseList.append(current.printAll());
         }
     }
 
