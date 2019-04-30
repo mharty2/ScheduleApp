@@ -7,8 +7,8 @@ public class CourseInfo {
     private String time;
     private String days;
     private String location;
-    private int creditHours;
-    private int crn;
+    private String creditHours;
+    private String crn;
 
     public String getName() {
         return name;
@@ -34,15 +34,15 @@ public class CourseInfo {
         return location;
     }
 
-    public int getCreditHours() {
+    public String getCreditHours() {
         return creditHours;
     }
 
-    public int getCrn() {
+    public String getCrn() {
         return crn;
     }
 
-    public CourseInfo(String name, String type, String section, String time, String days, String location, int creditHours, int crn) {
+    public CourseInfo(String name, String type, String section, String time, String days, String location, String creditHours, String crn) {
         this.name = name;
         this.type = type;
         this.section = section;
