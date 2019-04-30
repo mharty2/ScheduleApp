@@ -18,27 +18,37 @@ import java.util.List;
 public class XMLParser {
     private static final String ns = null;
 
+    private String setSectionNumber;
+
+
     //Class that stores a specific class's start time, end time, and building name
     public static class SpecificClassData {
 
-        private final String type;
-        private final String days;
-        private final String start;
-        private final String end;
-        private final String buildingName;
-        private final String roomNumber;
+        public final String type;
+        public final String days;
+        public final String start;
+        public final String end;
+        public final String buildingName;
+        public final String roomNumber;
+        public final String crn;
+        public final String sectionNumber;
 
+        /*public final String label;
+        public final String creditHours; */
 
 
         private SpecificClassData(String setType, String setDays,
                                   String setStart, String setEnd,
-                                  String setBuildingName, String setRoomNumber) {
+                                  String setBuildingName, String setRoomNumber,
+                                  String setCrn, String setSectionNumber) {
             this.type = setType;
             this.days = setDays;
             this.start = setStart;
             this.end = setEnd;
             this.buildingName = setBuildingName;
             this.roomNumber = setRoomNumber;
+            this.crn = setCrn;
+            this.sectionNumber = setSectionNumber;
         }
         public String getType() {return type; }
         public String getDays() {return days; }
@@ -52,8 +62,34 @@ public class XMLParser {
             return buildingName;
         }
         public String getRoomNumber() {return roomNumber; }
+        public String getCrn() {
+            return crn;
+        }
+        public String getSectionNumber() {
+            return sectionNumber;
+        }
+        /* public String getLabel() {
+            return label;
+        }
+        public String getCreditHours() {
+            return creditHours;
+        } */
+
+        /* public void setCrn(String setCrn) {
+            crn = setCrn;
+        }
+        public void setSectionNumber(String setSectionNumber) {
+            sectionNumber = setSectionNumber;
+        }
+        public void setLabel(String setLabel) {
+            label = setLabel;
+        }
+        public void setCreditHours(String setCreditHours) {
+            crn = setCreditHours;
+        } */
+
         public String printAll() {
-            return type + ", " + days + ", " + start + ", " + end + ", " + buildingName + ", " + roomNumber;
+            return type + ", " + days + ", " + start + ", " + end + ", " + buildingName + ", " + roomNumber + ", " + crn + ", " + sectionNumber;
         }
     }
 
@@ -118,15 +154,24 @@ public class XMLParser {
 
         SpecificClassData toReturn = null;
 
+
         parser.require(XmlPullParser.START_TAG, ns, "detailedSection");
+
+        String crn = parser.getAttributeValue(null, "id").toString();
+        Log.d("crn", crn);
 
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
                 continue;
             }
             String name = parser.getName();
-            if (name.equals("meetings")) {
-                toReturn = readMeetings(parser);
+            //String sectionNumber = "";
+            if (name.equals("sectionNumber")) {
+                setSectionNumber = readSectionNumber(parser);
+                Log.d("sectionNumber", setSectionNumber);
+            } else if (name.equals("meetings")) {
+                Log.d("sectionNumber2", setSectionNumber);
+                toReturn = readMeetings(parser, crn, setSectionNumber);
             } else {
                 skip(parser);
             }
@@ -135,7 +180,7 @@ public class XMLParser {
     }
 
     //Helper method that starts the nested search for meeting (calls readMeeting)
-    private SpecificClassData readMeetings(XmlPullParser parser) throws XmlPullParserException, IOException {
+    private SpecificClassData readMeetings(XmlPullParser parser, String crn, String sectionNumber) throws XmlPullParserException, IOException {
         Log.d("readMeetings", "reached readMeetings");
 
         SpecificClassData toReturn = null;
@@ -147,7 +192,7 @@ public class XMLParser {
             }
             String name = parser.getName();
             if (name.equals("meeting")) {
-                toReturn = readMeeting(parser);
+                toReturn = readMeeting(parser, crn, sectionNumber);
             } else {
                 skip(parser);
             }
@@ -156,7 +201,7 @@ public class XMLParser {
     }
 
     //Reads meeting tag of a specific class. Gets start time, end time, and building name
-    private SpecificClassData readMeeting(XmlPullParser parser) throws XmlPullParserException, IOException {
+    private SpecificClassData readMeeting(XmlPullParser parser, String crn, String sectionNumber) throws XmlPullParserException, IOException {
         //Debug print statement
         Log.d("readMeeting", "reached readMeeting method");
 
@@ -189,7 +234,18 @@ public class XMLParser {
             }
         }
         Log.d("readMeeting OUTPUT", type + days + start + end + buildingName + roomNumber);
-        return new SpecificClassData(type, days, start, end, buildingName, roomNumber);
+        return new SpecificClassData(type, days, start, end, buildingName, roomNumber, crn, sectionNumber);
+    }
+
+    //Gets section number of a specific class
+    private String readSectionNumber(XmlPullParser parser) throws XmlPullParserException, IOException {
+        //Debug print statement
+        Log.d("readSectionNumber", "reached readSectionNumber method");
+
+        parser.require(XmlPullParser.START_TAG, ns, "sectionNumber");
+        String sectionNumber = readText(parser);
+        parser.require(XmlPullParser.END_TAG, ns, "sectionNumber");
+        return sectionNumber;
     }
 
     //Gets start time of a specific class

@@ -32,15 +32,26 @@ public class CourseSearch extends AppCompatActivity {
         setContentView(R.layout.activity_course_search);
         findViewById(R.id.courseSearchCancel).setOnClickListener(v -> cancel());
         findViewById(R.id.courseSearchAdd).setOnClickListener(v -> addCourse());
-        findViewById(R.id.courseSearchSearchButton).setOnClickListener(v -> loadRecyclerViewData());
+        findViewById(R.id.courseSearchSearchButton).setOnClickListener(v -> parseXml());
         recyclerView = findViewById(R.id.courseSearchRecycler);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         listItems = new ArrayList<>();
-        loadRecyclerViewData();
+        //loadRecyclerViewData();
     }
     private void loadRecyclerViewData() {
-        for (int i = 0; i < 10; i++) {
+        for (XMLParser.SpecificClassData current : internalClassList) {
+            CourseInfo course = new CourseInfo("ExampleClass",
+                    current.getType(),
+                    current.getSectionNumber(),
+                    current.getStart() + " - " + current.getEnd(),
+                    current.getDays(),
+                    current.getBuildingName(),
+                    "ExampleCreditHoursHere",
+                    current.getCrn());
+            listItems.add(course);
+        }
+        /*for (int i = 0; i < 10; i++) {
             CourseInfo course = new CourseInfo("Course" + (i+1),
                     "Type" + (i+1),
                     "Section" + (i+1),
@@ -50,7 +61,7 @@ public class CourseSearch extends AppCompatActivity {
                     "CreditHours" + i,
                     "CRN" + i);
             listItems.add(course);
-        }
+        }*/
         adapter = new CourseSearchAdapter(listItems, CourseSearch.this);
         recyclerView.setAdapter(adapter);
     }
@@ -63,14 +74,14 @@ public class CourseSearch extends AppCompatActivity {
                 + ".xml?mode=cascade";
     }
 
-    void showClasses() {
+    /* void showClasses() {
         TextView courseList = ((TextView) findViewById(R.id.courseSearchTestTextView));
         courseList.setText("");
         for (XMLParser.SpecificClassData current : internalClassList) {
             courseList.append("\n");
             courseList.append(current.printAll());
         }
-    }
+    } */
 
     private void getXmlAsString() {
         HttpGetRequest getRequest = new HttpGetRequest();
@@ -95,7 +106,7 @@ public class CourseSearch extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            showClasses();
+            loadRecyclerViewData();
         }
     }
 
