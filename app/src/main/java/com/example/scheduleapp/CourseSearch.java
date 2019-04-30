@@ -40,13 +40,13 @@ public class CourseSearch extends AppCompatActivity {
     }
     private void loadRecyclerViewData() {
         for (XMLParser.SpecificClassData current : internalClassList) {
-            CourseInfo course = new CourseInfo("ExampleClass",
+            CourseInfo course = new CourseInfo(current.getLabel(),
                     current.getType(),
                     current.getSectionNumber(),
                     current.getStart() + " - " + current.getEnd(),
                     current.getDays(),
                     current.getBuildingName(),
-                    "ExampleCreditHoursHere",
+                    current.getCreditHours(),
                     current.getCrn());
             listItems.add(course);
         }
