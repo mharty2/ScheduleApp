@@ -42,6 +42,8 @@ public class CourseInfo {
         return crn;
     }
 
+    public CourseInfo() {}
+
     public CourseInfo(String name, String type, String section, String time, String days, String location, String creditHours, String crn) {
         this.name = name;
         this.type = type;

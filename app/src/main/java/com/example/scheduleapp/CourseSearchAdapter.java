@@ -78,7 +78,7 @@ public class CourseSearchAdapter extends RecyclerView.Adapter<CourseSearchAdapte
                     public void onClick(DialogInterface dialog, int which) {
                         Map<String, CourseInfo> course = new HashMap<>();
                         course.put("course", item);
-                        mFirestore.collection("courses").add(item).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                        mFirestore.collection("courses").add(course).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                             @Override
                             public void onSuccess(DocumentReference documentReference) {
                                 Toast.makeText(context, "Class added to Firestore", Toast.LENGTH_LONG).show();
