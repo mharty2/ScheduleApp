@@ -1,131 +1,86 @@
 package com.example.scheduleapp;
 
 import java.lang.reflect.Array;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class Schedule {
-    //Constructor
-    Schedule() {
-        internalClassData = new ArrayList<XMLParser.SpecificClassData>();
-        schedule.add(Monday);
-        schedule.add(Tuesday);
-        schedule.add(Wednesday);
-        schedule.add(Thursday);
-        schedule.add(Friday);
+    private String name;
+    private HashMap<String, List<CourseInfo>> schedule = new HashMap();
+    private List<CourseInfo> monday = new ArrayList<>();
+    private List<CourseInfo> tuesday = new ArrayList<>();
+    private List<CourseInfo> wednesday = new ArrayList<>();
+    private List<CourseInfo> thursday = new ArrayList<>();
+    public List<CourseInfo> friday = new ArrayList<>();
+    Schedule(String name) {
+        this.name = name;
+        schedule.put("Monday", monday);
+        schedule.put("Tuesday", tuesday);
+        schedule.put("Wednesday", wednesday);
+        schedule.put("Thursday", thursday);
+        schedule.put("Friday", friday);
     }
-
-    //Internal class to store in each day list. Only stores one day and location
-    private class simplifiedClassData {
-        private String day;
-        private String buildingName;
-        private String roomNumber;
-        private String start;
-        private String end;
-
-        public String getDay() {
-            return day;
+    public void addCourse(CourseInfo course) {
+        if (course.getDays().contains("M")) {
+            monday.add(course);
         }
-        public String getBuildingName() {
-            return buildingName;
+        if (course.getDays().contains("T")) {
+            tuesday.add(course);
         }
-        public String getRoomNumber() {
-            return roomNumber;
+        if (course.getDays().contains("W")) {
+            wednesday.add(course);
         }
-        public String getStart() {
-            return start;
+        if (course.getDays().contains("R")) {
+            thursday.add(course);
         }
-        public String getEnd() {
-            return end;
+        if (course.getDays().contains("F")) {
+            friday.add(course);
         }
-
-        simplifiedClassData(String setDay, String setBuildingName, String setRoomNumber, String setStart, String setEnd) {
-            day = setDay;
-            buildingName = setBuildingName;
-            roomNumber = setRoomNumber;
-            start = setStart;
-            end = setEnd;
+        sortSchedule();
+    }
+    private void sortSchedule() {
+        for(Map.Entry<String, List<CourseInfo>> entry : schedule.entrySet()) {
+            sortByTime(entry.getValue());
         }
     }
-
-    private List<XMLParser.SpecificClassData> internalClassData;
-
-    private List<simplifiedClassData> Monday = new ArrayList<>();
-    private List<simplifiedClassData> Tuesday = new ArrayList<>();
-    private List<simplifiedClassData> Wednesday = new ArrayList<>();
-    private List<simplifiedClassData> Thursday = new ArrayList<>();
-    private List<simplifiedClassData> Friday = new ArrayList<>();
-
-    private List<List<simplifiedClassData>> schedule = new ArrayList<>();
-
-
-    public void addClass(XMLParser.SpecificClassData toAdd) {
-        internalClassData.add(toAdd);
-        schedule(toAdd);
-    }
-
-    private void schedule(XMLParser.SpecificClassData toSchedule) {
-        char[] toEdit = toSchedule.getDays().toCharArray();
-        for (char letter : toEdit) {
-            if (letter == 'M') {
-                Monday.add(new simplifiedClassData("Monday",
-                        toSchedule.getBuildingName(),
-                        toSchedule.getRoomNumber(),
-                        toSchedule.getStart(),
-                        toSchedule.getEnd()));
-            } else if (letter == 'T') {
-                Tuesday.add(new simplifiedClassData("Tuesday",
-                        toSchedule.getBuildingName(),
-                        toSchedule.getRoomNumber(),
-                        toSchedule.getStart(),
-                        toSchedule.getEnd()));
-            } else if (letter == 'W') {
-                Wednesday.add(new simplifiedClassData("Wednesday",
-                        toSchedule.getBuildingName(),
-                        toSchedule.getRoomNumber(),
-                        toSchedule.getStart(),
-                        toSchedule.getEnd()));
-            } else if (letter == 'R') {
-                Thursday.add(new simplifiedClassData("Thursday",
-                        toSchedule.getBuildingName(),
-                        toSchedule.getRoomNumber(),
-                        toSchedule.getStart(),
-                        toSchedule.getEnd()));
-            } else if (letter == 'F') {
-                Friday.add(new simplifiedClassData("Friday",
-                        toSchedule.getBuildingName(),
-                        toSchedule.getRoomNumber(),
-                        toSchedule.getStart(),
-                        toSchedule.getEnd()));
+    private void sortByTime(List<CourseInfo> input) {
+        for (int i = 1; i < input.size(); i++) {
+            for (int j = i - 1; j >= 0; j--) {
+                if (compareTimes(input.get(j).getTime(), input.get(i).getTime()) > 0) {
+                    CourseInfo temp = input.get(j);
+                    input.set(j, input.get(i));
+                    input.set(i, temp);
+                    i--;
+                }
             }
         }
     }
-
-    /*private void sortDayLists(List<simplifiedClassData> dayList) {
-        List<simplifiedClassData> toSet = new ArrayList<>();
-
-        char[] minTime = dayList.get(0).getStart().toCharArray();
-        while (dayList.size() > 0) {
-            for (int i = 1; i < dayList.size(); i++) {
-                char[] currentTime = dayList.get(i).getStart().toCharArray();
-                if (minTime[0] == 1 && currentTime[0] == 1)
-            }
+    private int compareTimes(String a, String b) {
+        String[] arr1 = a.split(":");
+        String[] arr2 = b.split(":");
+        int int1 = Integer.parseInt(arr1[0]);
+        int int2 = Integer.parseInt(arr2[0]);
+        if (a.contains("PM") && int1 != 12) {
+            int1 += 12;
         }
+        if (b.contains("PM") && int2 != 12) {
+            int2 += 12;
+        }
+        if (a.contains("AM") && int1 == 12) {
+            int1 = 0;
+        }
+        if (b.contains("AM") && int2 == 12) {
+            int2 = 0;
+        }
+        if (int1 > int2) {
+            return 1;
+        }
+        if (int1 == int2) {
+            return 0;
+        }
+        return -1;
     }
-
-    private double to24HourTime(String time) {
-        if (time.charAt(1) == ':') {
-            if (time.charAt(5) == 'A') {
-                return Integer.parseInt(time.substring(0, 1));
-            } else if (time.charAt(5) == 'P' || time.charAt(6) == 'P') {
-                return Integer.parseInt(time.substring(0,1)) + 12;
-            }
-        } else if (time.charAt(2) == ':' ) {
-            if (time.charAt(5) == 'A' || time.charAt(6) == 'A') {
-                return String.get
-            } else if (time.charAt(5) == 'P' || time.charAt(6) == 'P') {
-                return Character.getNumericValue(0) + 12;
-            }
-        }
-    } */
 }
