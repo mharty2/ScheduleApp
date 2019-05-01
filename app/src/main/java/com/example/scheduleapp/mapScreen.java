@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -41,6 +42,7 @@ public class mapScreen extends AppCompatActivity
     private Spinner selectDay, classOne, classTwo;
     /**Stores the distance between the two points*/
     private static float distance = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -160,7 +162,10 @@ public class mapScreen extends AppCompatActivity
             loc2.setLongitude(longitudes[currentIndex2]);
             distance = loc1.distanceTo(loc2);
             //This line displays the distance. You can add the textview wherever and convert it to time.
-            //displayDistance.setText("Distance: " + distance);
+            ((TextView) findViewById(R.id.mapScreenDistance)).setText("Distance: " + distance);
+
+            //Distance is in meters (i think), 84 is average walk time in m/min
+            ((TextView) findViewById(R.id.mapScreenTime)).setText(Double.toString(distance / 84));
         } catch (ArrayIndexOutOfBoundsException e) {
             googleMap.clear();
         }
