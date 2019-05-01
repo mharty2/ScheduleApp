@@ -37,31 +37,19 @@ public class CourseSearch extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         listItems = new ArrayList<>();
-        //loadRecyclerViewData();
     }
     private void loadRecyclerViewData() {
         for (XMLParser.SpecificClassData current : internalClassList) {
-            CourseInfo course = new CourseInfo("ExampleClass",
+            CourseInfo course = new CourseInfo(current.getLabel(),
                     current.getType(),
                     current.getSectionNumber(),
                     current.getStart() + " - " + current.getEnd(),
                     current.getDays(),
                     current.getBuildingName(),
-                    "ExampleCreditHoursHere",
+                    current.getCreditHours(),
                     current.getCrn());
             listItems.add(course);
         }
-        /*for (int i = 0; i < 10; i++) {
-            CourseInfo course = new CourseInfo("Course" + (i+1),
-                    "Type" + (i+1),
-                    "Section" + (i+1),
-                    "Time" + (i+1),
-                    "Days" + (i+1),
-                    "Location" + (i+1),
-                    "CreditHours" + i,
-                    "CRN" + i);
-            listItems.add(course);
-        }*/
         adapter = new CourseSearchAdapter(listItems, CourseSearch.this);
         recyclerView.setAdapter(adapter);
     }

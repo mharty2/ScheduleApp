@@ -33,8 +33,8 @@ public class XMLParser {
         public final String crn;
         public final String sectionNumber;
 
-        /*public final String label;
-        public final String creditHours; */
+        public String label;
+        public String creditHours;
 
 
         private SpecificClassData(String setType, String setDays,
@@ -49,6 +49,8 @@ public class XMLParser {
             this.roomNumber = setRoomNumber;
             this.crn = setCrn;
             this.sectionNumber = setSectionNumber;
+            this.label = "";
+            this.creditHours = "";
         }
         public String getType() {return type; }
         public String getDays() {return days; }
@@ -68,28 +70,24 @@ public class XMLParser {
         public String getSectionNumber() {
             return sectionNumber;
         }
-        /* public String getLabel() {
+        public String getLabel() {
             return label;
         }
         public String getCreditHours() {
             return creditHours;
-        } */
+        }
 
-        /* public void setCrn(String setCrn) {
-            crn = setCrn;
-        }
-        public void setSectionNumber(String setSectionNumber) {
-            sectionNumber = setSectionNumber;
-        }
         public void setLabel(String setLabel) {
             label = setLabel;
         }
         public void setCreditHours(String setCreditHours) {
-            crn = setCreditHours;
-        } */
+            creditHours = setCreditHours;
+        }
 
         public String printAll() {
-            return type + ", " + days + ", " + start + ", " + end + ", " + buildingName + ", " + roomNumber + ", " + crn + ", " + sectionNumber;
+            return type + ", " + days + ", " + start + ", "
+                    + end + ", " + buildingName + ", " + roomNumber + ", " + crn + ", "
+                    + sectionNumber + ", " + label + ", " + creditHours;
         }
     }
 
@@ -111,6 +109,8 @@ public class XMLParser {
         Log.d("readNS2", "readNS2C method reached");
 
         List<SpecificClassData> toReturn = new ArrayList<>();
+        String label = "";
+        String creditHours = "";
 
         parser.require(XmlPullParser.START_TAG, ns, "ns2:course");
         while (parser.next() != XmlPullParser.END_TAG) {
@@ -119,11 +119,19 @@ public class XMLParser {
             }
             String name = parser.getName();
 
-            if (name.equals("detailedSections")) {
+            if (name.equals("label")) {
+                label = readLabel(parser);
+            } else if (name.equals("creditHours")) {
+                creditHours = readCreditHours(parser);
+            } else if (name.equals("detailedSections")) {
                 toReturn = readDetailedSections(parser);
             } else {
                 skip(parser);
             }
+        }
+        for (SpecificClassData current : toReturn) {
+            current.setCreditHours(creditHours);
+            current.setLabel(label);
         }
         return toReturn;
     }
@@ -235,6 +243,28 @@ public class XMLParser {
         }
         Log.d("readMeeting OUTPUT", type + days + start + end + buildingName + roomNumber);
         return new SpecificClassData(type, days, start, end, buildingName, roomNumber, crn, sectionNumber);
+    }
+
+    //Gets label for specific class
+    private String readLabel(XmlPullParser parser) throws XmlPullParserException, IOException {
+        //Debug print statement
+        Log.d("readLabel", "reached readLabel method");
+
+        parser.require(XmlPullParser.START_TAG, ns, "label");
+        String label = readText(parser);
+        parser.require(XmlPullParser.END_TAG, ns, "label");
+        return label;
+    }
+
+    //Gets credithours for a class
+    private String readCreditHours(XmlPullParser parser) throws XmlPullParserException, IOException {
+        //Debug print statement
+        Log.d("readCreditHours", "reached readCreditHours method");
+
+        parser.require(XmlPullParser.START_TAG, ns, "creditHours");
+        String creditHours = readText(parser);
+        parser.require(XmlPullParser.END_TAG, ns, "creditHours");
+        return creditHours;
     }
 
     //Gets section number of a specific class
