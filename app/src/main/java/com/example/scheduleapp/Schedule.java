@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 
 public class Schedule {
     private String name;
-    private HashMap<String, List<CourseInfo>> schedule = new HashMap<>();
+    public HashMap<String, List<CourseInfo>> schedule = new HashMap<>();
     private List<CourseInfo> monday = new ArrayList<>();
     private List<CourseInfo> tuesday = new ArrayList<>();
     private List<CourseInfo> wednesday = new ArrayList<>();
@@ -23,6 +23,10 @@ public class Schedule {
         schedule.put("Thursday", thursday);
         schedule.put("Friday", friday);
     }
+    Schedule() { }
+
+
+
     public void addCourse(CourseInfo course) {
         if (course.getDays().contains("M")) {
             monday.add(course);

@@ -52,4 +52,8 @@ public class CourseInfo {
         this.creditHours = creditHours;
         this.crn = crn;
     }
+
+    public CourseInfo(String setLocation) {
+        location = setLocation;
+    }
 }

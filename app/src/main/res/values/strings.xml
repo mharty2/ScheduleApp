@@ -1,4 +1,5 @@
 <resources>
+    <string name="google_maps_key">AIzaSyCi6iFmEMZZOweaUQyA60i86HE90mV4XpU</string>
     <string name="app_name">ScheduleApp</string>
     <string name="load_a_schedule">Load A Schedule</string>
     <string name="create_new_schedule">Create New Schedule</string>

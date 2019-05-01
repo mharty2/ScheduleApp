@@ -37,7 +37,7 @@ public class XMLParser {
         public String creditHours;
 
 
-        private SpecificClassData(String setType, String setDays,
+        public SpecificClassData(String setType, String setDays,
                                   String setStart, String setEnd,
                                   String setBuildingName, String setRoomNumber,
                                   String setCrn, String setSectionNumber) {
