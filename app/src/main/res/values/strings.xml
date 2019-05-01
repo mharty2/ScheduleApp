@@ -31,6 +31,13 @@
     <string name="see_mapview">See Map View</string>
     <string name="search">search</string>
     <string name="cancel">Cancel</string>
+    <string-array name="daysOfTheWeek">
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+    </string-array>
     <string-array name="courseSubjectAutoComplete">
         <item>Asian American Studies</item>
         <item>Agricultural and Biological Engineering</item>

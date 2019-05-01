@@ -3,19 +3,14 @@ package com.example.scheduleapp;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +21,7 @@ public class joshMapScreen extends AppCompatActivity {
     private Schedule currentSchedule;
 
     //ToDo: get current day from day spinner
-    private String currentDay = "Monday";
+    private String currentDay;
 
     private int counter = 0;
     private JsonParser parser = new JsonParser();
@@ -37,6 +32,16 @@ public class joshMapScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_josh_map_screen);
 
+        //Making spinner functional
+        Spinner spinner = (Spinner) findViewById(R.id.joshMapScreenDaySpin);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.daysOfTheWeek,
+                android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+
+        currentDay = spinner.getSelectedItem().toString();
+
         //SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.joshMapScreenFragment);
         //mapFragment.getMapAsync(this);
 
@@ -44,8 +49,8 @@ public class joshMapScreen extends AppCompatActivity {
         a single stored Schedule (see currentSchedule above) */
         //currentSchedule = GET SAVED SCHEDULE SOMEHOW
         List<CourseInfo> monday = new ArrayList<>();
-        monday.add(new CourseInfo("", "", "","","","Foellinger Auditorium","",""));
-        monday.add(new CourseInfo("", "", "","","","Altgelt Hall","",""));
+        monday.add(new CourseInfo("Foellinger Auditorium"));
+        monday.add(new CourseInfo("Altgelt Hall"));
         currentSchedule = new Schedule();
         currentSchedule.schedule.put("Monday", monday);
 
@@ -89,7 +94,9 @@ public class joshMapScreen extends AppCompatActivity {
 
     //Need to fix
     private JsonObject getGeocodeJson() {
-
+        if (currentDay == null) {
+            currentDay = "Monday";
+        }
         String urlStart = "https://maps.googleapis.com/maps/api/geocode/json?address=";
         String urlAddress = currentSchedule.schedule.get(currentDay).get(counter).getLocation();
         String urlEnd = "&key=AIzaSyCi6iFmEMZZOweaUQyA60i86HE90mV4XpU";
