@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "436594414772-6gk8urjhtl31tntvfkjtci8n4lmnacu8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.scheduleapp",
+            "certificate_hash": "883c20b2e055ac9ce1b36880b7fb7a95e8a7356c"
+          }
+        },
+        {
           "client_id": "436594414772-sl4kcts0fn6elrj3r1ekrbbkd44drn6o.apps.googleusercontent.com",
           "client_type": 3
         }
