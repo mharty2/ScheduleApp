@@ -13,12 +13,15 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.List;
+
 public class loadSchedule extends AppCompatActivity {
 
     private static final String PREFS_NAME = "ScheduleApp";
     private static final String PREF_USER_ID_TOKEN = "UserIdToken";
     private SharedPreferences sharedPreferences;
     private FirebaseAuth mAuth;
+    private List<Schedule> scheduleList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
