@@ -53,6 +53,7 @@ public class createSchedule extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 name = input.getText().toString();
+
                 Intent intent = new Intent(createSchedule.this, ChooseSchedule.class);
                 startActivity(intent);
                 finish();
