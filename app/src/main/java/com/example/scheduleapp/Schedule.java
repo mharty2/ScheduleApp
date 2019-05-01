@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 
 public class Schedule {
     private String name;
-    private HashMap<String, List<CourseInfo>> schedule = new HashMap();
+    private HashMap<String, List<CourseInfo>> schedule = new HashMap<>();
     private List<CourseInfo> monday = new ArrayList<>();
     private List<CourseInfo> tuesday = new ArrayList<>();
     private List<CourseInfo> wednesday = new ArrayList<>();

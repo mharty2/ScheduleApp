@@ -10,7 +10,7 @@
     <string name="brings_user_to_choose_schedule_screen">Brings user to choose schedule screen</string>
     <string name="save_schedule">Save Schedule</string>
     <string name="subject">Subject</string>
-    <string name="course_number">Course number</string>
+    <string name="course_number">Number</string>
     <string name="add_course">Add Course</string>
     <string name="name">Name</string>
     <string name="days">Days</string>
@@ -30,5 +30,194 @@
     <string name="see_mapview">See Map View</string>
     <string name="search">search</string>
     <string name="cancel">Cancel</string>
+    <string-array name="courseSubjectAutoComplete">
+        <item>Asian American Studies</item>
+        <item>Agricultural and Biological Engineering</item>
+        <item>Accountancy</item>
+        <item>Agricultural and Consumer Economics</item>
+        <item>Agricultural, Consumer and Environmental Sciences</item>
+        <item>Advertising</item>
+        <item>Aerospace Engineering</item>
+        <item>Air Force Aerospace Studies</item>
+        <item>African American Studies</item>
+        <item>African Studies</item>
+        <item>Agricultural Communications</item>
+        <item>Agricultural Education</item>
+        <item>Applied Health Sciences Courses</item>
+        <item>American Indian Studies</item>
+        <item>Animal Sciences</item>
+        <item>Anthropology</item>
+        <item>Arabic</item>
+        <item>Architecture</item>
+        <item>Art</item>
+        <item>Art--Design</item>
+        <item>Art--Education</item>
+        <item>Art--Foundation</item>
+        <item>Art--History</item>
+        <item>Art-Studio</item>
+        <item>Actuarial Science and Risk Management</item>
+        <item>Asian Studies</item>
+        <item>Astronomy</item>
+        <item>Atmospheric Sciences</item>
+        <item>Business Administration</item>
+        <item>Basque</item>
+        <item>Brain and Cognitive Science</item>
+        <item>Bosnian-Croatian-Serbian</item>
+        <item>Biochemistry</item>
+        <item>Bioengineering</item>
+        <item>Biology</item>
+        <item>Biophysics</item>
+        <item>Biomedical Sciences and Engineering</item>
+        <item>Business and Technical Writing</item>
+        <item>Business</item>
+        <item>Comparative Biosciences</item>
+        <item>Cell and Developmental Biology</item>
+        <item>Civil and Environmental Engineering</item>
+        <item>Chemical and Biomolecular Engineering</item>
+        <item>Chemistry</item>
+        <item>Chinese</item>
+        <item>Community Health</item>
+        <item>Campus Honors Program Courses</item>
+        <item>Curriculum and Instruction</item>
+        <item>Committee on Inst Cooperation</item>
+        <item>Classical Civilization</item>
+        <item>Clinical Sciences and Engineering</item>
+        <item>Communication</item>
+        <item>Crop Sciences</item>
+        <item>Computer Science</item>
+        <item>Computational Science and Engineering</item>
+        <item>Creative Writing</item>
+        <item>Comparative and World Literature</item>
+        <item>Czech</item>
+        <item>Dance</item>
+        <item>East Asian Language and Culture</item>
+        <item>Electrical and Computer Engineering</item>
+        <item>Economics</item>
+        <item>Educational Practice</item>
+        <item>Education</item>
+        <item>English as an International Language</item>
+        <item>Engineering</item>
+        <item>Engineering Honors</item>
+        <item>English</item>
+        <item>Environmental Sustainability</item>
+        <item>Entomology</item>
+        <item>Environmental Studies</item>
+        <item>Educational Organization and Leadership</item>
+        <item>Education Policy, Organization and Leadership</item>
+        <item>Educational Policy Studies</item>
+        <item>Educational Psychology</item>
+        <item>Earth, Society, and Environment</item>
+        <item>English as a Second Language</item>
+        <item>European Union Studies</item>
+        <item>Fine and Applied Arts</item>
+        <item>Finance</item>
+        <item>Foreign Language Teacher Education</item>
+        <item>French</item>
+        <item>Food Science and Human Nutrition</item>
+        <item>Graduate College</item>
+        <item>Grand Challenge Learning</item>
+        <item>Geography</item>
+        <item>Geology</item>
+        <item>German</item>
+        <item>Global Studies</item>
+        <item>Germanic</item>
+        <item>Greek</item>
+        <item>Modern Greek</item>
+        <item>General Studies</item>
+        <item>Gender and Women\'s Studies</item>
+        <item>Human Development and Family Studies</item>
+        <item>Hebrew, Modern and Classical</item>
+        <item>History</item>
+        <item>Hindi</item>
+        <item>Horticulture</item>
+        <item>Human Resource Development</item>
+        <item>Health Technology</item>
+        <item>Humanities Courses</item>
+        <item>Integrative Biology</item>
+        <item>Industrial Engineering</item>
+        <item>i-Health Program</item>
+        <item>Informatics</item>
+        <item>Information Sciences</item>
+        <item>Italian</item>
+        <item>Japanese</item>
+        <item>Journalism</item>
+        <item>Jewish Studies</item>
+        <item>Kinesiology</item>
+        <item>Korean</item>
+        <item>Landscape Architecture</item>
+        <item>Liberal Arts and Sciences</item>
+        <item>Latin American and Caribbean Studies</item>
+        <item>Latin</item>
+        <item>Law</item>
+        <item>Labor and Employment Relations</item>
+        <item>Linguistics</item>
+        <item>Latina/Latino Studies</item>
+        <item>Media and Cinema Studies</item>
+        <item>Mathematics</item>
+        <item>Regular MBA Program Administration</item>
+        <item>Molecular and Cell Biology</item>
+        <item>Media</item>
+        <item>Medieval Studies</item>
+        <item>Mechanical Engineering</item>
+        <item>Microbiology</item>
+        <item>Military Science</item>
+        <item>Molecular and Integrative Physiology</item>
+        <item>Materials Science and Engineering</item>
+        <item>Music</item>
+        <item>Museum Studies</item>
+        <item>Neuroscience</item>
+        <item>Nuclear, Plasma, and Radiological Engineering</item>
+        <item>Natural Resources and Environmental Sciences</item>
+        <item>Naval Science</item>
+        <item>Nutritional Sciences</item>
+        <item>Pathobiology</item>
+        <item>Plant Biology</item>
+        <item>Persian</item>
+        <item>Philosophy</item>
+        <item>Physics</item>
+        <item>Plant Pathology</item>
+        <item>Polish</item>
+        <item>Portuguese</item>
+        <item>Political Science</item>
+        <item>Professional Science Master\'s Program</item>
+        <item>Psychology</item>
+        <item>Russian, East European and Eurasian Studies</item>
+        <item>Rehabilitation Counseling</item>
+        <item>Religion</item>
+        <item>Rhetoric and Composition</item>
+        <item>Romance Linguistics</item>
+        <item>Rural Sociology</item>
+        <item>Recreation, Sport, and Tourism</item>
+        <item>Russian</item>
+        <item>South Asian and Middle Eastern Studies</item>
+        <item>Strategic Brand Communication</item>
+        <item>Scandinavian</item>
+        <item>Systems Engineering and Design</item>
+        <item>Speech and Hearing Science</item>
+        <item>Slavic</item>
+        <item>Second Language Studies</item>
+        <item>Sociology</item>
+        <item>Social Work</item>
+        <item>Spanish</item>
+        <item>Special Education</item>
+        <item>Statistics</item>
+        <item>Swahili</item>
+        <item>Theoretical and Applied Mechanics</item>
+        <item>Technology Entrepreneurship</item>
+        <item>Theatre</item>
+        <item>Technology and Management Courses</item>
+        <item>Translation Studies</item>
+        <item>Technical Systems Management</item>
+        <item>Turkish</item>
+        <item>Ukrainian</item>
+        <item>Urban and Regional Planning</item>
+        <item>Veterinary Clinical Medicine</item>
+        <item>Veterinary Medicine Courses</item>
+        <item>Wolof</item>
+        <item>Writing Studies</item>
+        <item>Yiddish</item>
+        <item>Zulu</item>
+
+    </string-array>
 
 </resources>
