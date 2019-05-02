@@ -18,6 +18,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +35,8 @@ public class CourseSearchAdapter extends RecyclerView.Adapter<CourseSearchAdapte
     private Activity mActivity;
     private AlertDialog alertDialog;
     private AlertDialog.Builder builder;
+    private FirebaseFirestore mFirestore;
+    private FirebaseAuth mAuth;
     SharedPreferences sharedPreferences;
     private static final String PREFS_NAME = "ScheduleApp";
     private static final String PREF_USER_ID_TOKEN = "UserIdToken";
@@ -54,6 +63,11 @@ public class CourseSearchAdapter extends RecyclerView.Adapter<CourseSearchAdapte
         viewHolder.txtViewLocation.setText(item.getLocation());
         viewHolder.txtViewCreditHours.setText(item.getCreditHours());
         viewHolder.txtViewCRN.setText(item.getCrn());
+        mFirestore = FirebaseFirestore.getInstance();
+        sharedPreferences = mActivity.getSharedPreferences(PREFS_NAME, mActivity.MODE_PRIVATE);
+        mAuth = FirebaseAuth.getInstance();
+        mAuth.signInWithCustomToken(sharedPreferences.getString(PREF_USER_ID_TOKEN, null));
+        FirebaseUser user = mAuth.getCurrentUser();
 
         //when card is clicked.
         viewHolder.linearLayout.setOnClickListener(new View.OnClickListener() {
@@ -64,6 +78,21 @@ public class CourseSearchAdapter extends RecyclerView.Adapter<CourseSearchAdapte
                 builder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        toCreateSchedule(i);
+                        Map<String, CourseInfo> course = new HashMap<>();
+                        course.put("course", item);
+                        mFirestore.collection(sharedPreferences.getString(PREF_USER_ID_TOKEN, null)).add(course).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                            @Override
+                            public void onSuccess(DocumentReference documentReference) {
+                                Toast.makeText(mActivity, "Class added to Firestore", Toast.LENGTH_LONG).show();
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(mActivity, "Class addition failed" + e, Toast.LENGTH_LONG).show();
+                                Log.d("tag", e.toString());
+                            }
+                        });
                         toCreateSchedule(i);
                     }
                 });
