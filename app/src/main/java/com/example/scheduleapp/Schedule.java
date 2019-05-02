@@ -1,5 +1,8 @@
 package com.example.scheduleapp;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.lang.reflect.Array;
 import java.util.HashMap;
 import java.util.List;
@@ -7,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class Schedule {
+public class Schedule implements Parcelable {
     private String name;
     public HashMap<String, List<CourseInfo>> schedule = new HashMap<>();
     private List<CourseInfo> monday = new ArrayList<>();
@@ -87,4 +90,91 @@ public class Schedule {
         }
         return -1;
     }
+
+    protected Schedule(Parcel in) {
+        name = in.readString();
+        if (in.readByte() == 0x01) {
+            monday = new ArrayList<CourseInfo>();
+            in.readList(monday, CourseInfo.class.getClassLoader());
+        } else {
+            monday = null;
+        }
+        if (in.readByte() == 0x01) {
+            tuesday = new ArrayList<CourseInfo>();
+            in.readList(tuesday, CourseInfo.class.getClassLoader());
+        } else {
+            tuesday = null;
+        }
+        if (in.readByte() == 0x01) {
+            wednesday = new ArrayList<CourseInfo>();
+            in.readList(wednesday, CourseInfo.class.getClassLoader());
+        } else {
+            wednesday = null;
+        }
+        if (in.readByte() == 0x01) {
+            thursday = new ArrayList<CourseInfo>();
+            in.readList(thursday, CourseInfo.class.getClassLoader());
+        } else {
+            thursday = null;
+        }
+        if (in.readByte() == 0x01) {
+            friday = new ArrayList<CourseInfo>();
+            in.readList(friday, CourseInfo.class.getClassLoader());
+        } else {
+            friday = null;
+        }
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
+        if (monday == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeList(monday);
+        }
+        if (tuesday == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeList(tuesday);
+        }
+        if (wednesday == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeList(wednesday);
+        }
+        if (thursday == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeList(thursday);
+        }
+        if (friday == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeList(friday);
+        }
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<Schedule> CREATOR = new Parcelable.Creator<Schedule>() {
+        @Override
+        public Schedule createFromParcel(Parcel in) {
+            return new Schedule(in);
+        }
+
+        @Override
+        public Schedule[] newArray(int size) {
+            return new Schedule[size];
+        }
+    };
 }

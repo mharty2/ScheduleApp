@@ -106,23 +106,29 @@ public class createSchedule extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Save Schedule?");
 
-// Set up the input
+        // Set up the input
         final EditText input = new EditText(this);
         input.setHint("Schedule name");
 
 
         // Set an EditText view to get user input
-// Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
         input.setInputType(InputType.TYPE_CLASS_TEXT);
         builder.setView(input);
 
-// Set up the buttons
+        // Set up the buttons
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 name = input.getText().toString();
 
-                Intent intent = new Intent(createSchedule.this, ChooseSchedule.class);
+                Schedule scheduleClasses = new Schedule();
+                for (CourseInfo current : schedule) {
+                    scheduleClasses.addCourse(current);
+                }
+                Intent intent = new Intent(createSchedule.this, joshMapScreen.class);
+                Bundle scheduleBundle = new Bundle();
+                scheduleBundle.putParcelable("schedule", scheduleClasses);
                 startActivity(intent);
                 finish();
             }

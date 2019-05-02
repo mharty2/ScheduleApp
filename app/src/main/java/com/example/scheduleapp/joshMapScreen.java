@@ -1,5 +1,6 @@
 package com.example.scheduleapp;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class joshMapScreen extends AppCompatActivity {
+
+    private Schedule differentSchedule;
 
     private GoogleMap mMap;
     private Schedule currentSchedule;
@@ -45,10 +48,12 @@ public class joshMapScreen extends AppCompatActivity {
         //SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.joshMapScreenFragment);
         //mapFragment.getMapAsync(this);
 
+        //Intent intent = getIntent();
+        //differentSchedule = intent.getExtras().getParcelable("schedule");
+
         /*ToDo: figure out how the Schedule is loaded in. This whole class bases off
         a single stored Schedule (see currentSchedule above) */
         //currentSchedule = GET SAVED SCHEDULE SOMEHOW
-
         List<CourseInfo> monday = new ArrayList<>();
         monday.add(new CourseInfo("Foellinger Auditorium"));
         monday.add(new CourseInfo("Altgelt Hall"));
