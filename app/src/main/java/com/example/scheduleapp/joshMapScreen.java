@@ -48,6 +48,7 @@ public class joshMapScreen extends AppCompatActivity {
         /*ToDo: figure out how the Schedule is loaded in. This whole class bases off
         a single stored Schedule (see currentSchedule above) */
         //currentSchedule = GET SAVED SCHEDULE SOMEHOW
+
         List<CourseInfo> monday = new ArrayList<>();
         monday.add(new CourseInfo("Foellinger Auditorium"));
         monday.add(new CourseInfo("Altgelt Hall"));

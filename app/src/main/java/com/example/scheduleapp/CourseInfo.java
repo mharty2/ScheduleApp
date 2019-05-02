@@ -1,6 +1,10 @@
 package com.example.scheduleapp;
+
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /** Class for holding all data for google-services.json single course */
-public class CourseInfo {
+public class CourseInfo implements Parcelable {
     private String name;
     private String type;
     private String section;
@@ -58,4 +62,45 @@ public class CourseInfo {
     public CourseInfo(String setLocation) {
         location = setLocation;
     }
+
+    protected CourseInfo(Parcel in) {
+        name = in.readString();
+        type = in.readString();
+        section = in.readString();
+        time = in.readString();
+        days = in.readString();
+        location = in.readString();
+        creditHours = in.readString();
+        crn = in.readString();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
+        dest.writeString(type);
+        dest.writeString(section);
+        dest.writeString(time);
+        dest.writeString(days);
+        dest.writeString(location);
+        dest.writeString(creditHours);
+        dest.writeString(crn);
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<CourseInfo> CREATOR = new Parcelable.Creator<CourseInfo>() {
+        @Override
+        public CourseInfo createFromParcel(Parcel in) {
+            return new CourseInfo(in);
+        }
+
+        @Override
+        public CourseInfo[] newArray(int size) {
+            return new CourseInfo[size];
+        }
+    };
 }
