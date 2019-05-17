@@ -1,6 +1,8 @@
 package com.example.scheduleapp;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -294,13 +296,30 @@ public class CourseSearch extends AppCompatActivity {
 
         try {
             internalClassList = parser.parseSpecificClass(stream);
-        } catch (XmlPullParserException e) {
+            loadRecyclerViewData();
+        } catch (Exception e) {
+            listItems.clear();
+            adapter = new CourseSearchAdapter(listItems, CourseSearch.this);
+            recyclerView.setAdapter(adapter);
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Sorry this class is either invalid or does not have any sections this semester!")
+                    .setCancelable(false)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            //do things
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
+        /**
+        catch (XmlPullParserException e) {
             e.printStackTrace();
+
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            loadRecyclerViewData();
         }
+         */
     }
 
     void cancel() {

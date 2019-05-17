@@ -21,13 +21,13 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_api_key" />
 
-        <activity android:name=".joshMapScreen"></activity>
-        <activity android:name=".CourseSearch" />
-        <activity android:name=".mapScreen" />
-        <activity android:name=".loadSchedule" />
-        <activity android:name=".dailySchedule" />
-        <activity android:name=".createSchedule" />
-        <activity android:name=".ChooseSchedule">
+        <activity android:name=".joshMapScreen" android:screenOrientation="nosensor"></activity>
+        <activity android:name=".CourseSearch" android:screenOrientation="nosensor"/>
+        <activity android:name=".mapScreen" android:screenOrientation="nosensor"/>
+        <activity android:name=".loadSchedule" android:screenOrientation="nosensor"/>
+        <activity android:name=".dailySchedule" android:screenOrientation="nosensor"/>
+        <activity android:name=".createSchedule" android:screenOrientation="nosensor"/>
+        <activity android:name=".ChooseSchedule" android:screenOrientation="nosensor">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -35,5 +35,4 @@
             </intent-filter>
         </activity>
     </application>
-
 </manifest>
