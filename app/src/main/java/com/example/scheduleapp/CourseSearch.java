@@ -296,6 +296,7 @@ public class CourseSearch extends AppCompatActivity {
 
         try {
             internalClassList = parser.parseSpecificClass(stream);
+            //previously loadRecyclerView was in a finally{} statement, which caused an issue with internalClassList as it was null
             loadRecyclerViewData();
         } catch (Exception e) {
             listItems.clear();
