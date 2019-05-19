@@ -118,17 +118,17 @@ public class CourseSearchAdapter extends RecyclerView.Adapter<CourseSearchAdapte
         return listItems.size();
     }
     public class ViewHolder extends RecyclerView.ViewHolder{
+        //Were public before, made private
+        private TextView txtViewHeading;
+        private TextView txtViewSection;
+        private TextView txtViewTime;
+        private TextView txtViewDays;
+        private TextView txtViewLocation;
+        private TextView txtViewCreditHours;
+        private TextView txtViewCRN;
+        private LinearLayout linearLayout;
 
-        public TextView txtViewHeading;
-        public TextView txtViewSection;
-        public TextView txtViewTime;
-        public TextView txtViewDays;
-        public TextView txtViewLocation;
-        public TextView txtViewCreditHours;
-        public TextView txtViewCRN;
-        public LinearLayout linearLayout;
-
-        public ViewHolder(@NonNull View itemView) {
+        private ViewHolder(@NonNull View itemView) {
             super(itemView);
             txtViewHeading = itemView.findViewById(R.id.txtViewHeading);
             txtViewSection = itemView.findViewById(R.id.txtViewSection);
@@ -143,12 +143,12 @@ public class CourseSearchAdapter extends RecyclerView.Adapter<CourseSearchAdapte
     }
     private void toCreateSchedule(int i) {
 
-        Log.d("toCreateSchedule","toCreateSchedule reached");
+        //Log.d("toCreateSchedule","toCreateSchedule reached");
         Intent returnIntent = new Intent();
-        Log.d("asdf", "Stored courseInfo: " + listItems.get(i).getName());
+        //Log.d("asdf", "Stored courseInfo: " + listItems.get(i).getName());
         Bundle storedCourse = new Bundle();
         storedCourse.putParcelable("storedCourse", listItems.get(i));
-        Log.d("toAdd", "toAdd: " + listItems.get(i));
+        //Log.d("toAdd", "toAdd: " + listItems.get(i));
         returnIntent.putExtras(storedCourse);
 
         mActivity.setResult(2, returnIntent);

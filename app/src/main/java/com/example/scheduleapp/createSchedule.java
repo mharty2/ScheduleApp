@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
@@ -69,9 +70,6 @@ public class createSchedule extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new CreateScheduleAdapter(schedule, this);
         recyclerView.setAdapter(adapter);
-        //loadRecyclerViewData();
-        /**
-         * keep this code for later reference.
         try {
             mAuth = FirebaseAuth.getInstance();
             mAuth.signInWithCustomToken(sharedPreferences.getString(PREF_USER_ID_TOKEN, null));
@@ -98,7 +96,7 @@ public class createSchedule extends AppCompatActivity {
                             // ...
                         }
                     });
-        } */
+        }
     }
 
     @Override
@@ -188,10 +186,32 @@ public class createSchedule extends AppCompatActivity {
                 for (CourseInfo current : schedule) {
                     scheduleClasses.addCourse(current);
                 }
+
+                Map<String, Schedule> scheduleMap = new HashMap<>();
+                scheduleMap.put(scheduleClasses.getName(), scheduleClasses);
+                mFirestore.collection(sharedPreferences.getString(PREF_USER_ID_TOKEN, null)).add(scheduleMap).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Toast.makeText(createSchedule.this, "schedule added to Firestore", Toast.LENGTH_LONG).show();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(createSchedule.this, "schedule addition failed" + e, Toast.LENGTH_LONG).show();
+                        Log.d("tag", e.toString());
+                    }
+                });
+
+                /**
                 //For demo purposes right?
                 Intent intent = new Intent(createSchedule.this, joshMapScreen.class);
                 Bundle scheduleBundle = new Bundle();
                 scheduleBundle.putParcelable("schedule", scheduleClasses);
+                startActivity(intent);
+                finish();
+                 */
+
+                Intent intent = new Intent(createSchedule.this, ChooseSchedule.class);
                 startActivity(intent);
                 finish();
             }
