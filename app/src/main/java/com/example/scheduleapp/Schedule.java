@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 public class Schedule implements Parcelable {
+
     private String name;
     public HashMap<String, List<CourseInfo>> schedule = new HashMap<>();
     private List<CourseInfo> monday = new ArrayList<>();
@@ -27,6 +28,13 @@ public class Schedule implements Parcelable {
         schedule.put("Friday", friday);
     }
     Schedule() { }
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
 
 

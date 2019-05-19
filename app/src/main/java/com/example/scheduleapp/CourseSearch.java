@@ -307,7 +307,7 @@ public class CourseSearch extends AppCompatActivity {
                     .setCancelable(false)
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            //do things
+                            //do nothing 
                         }
                     });
             AlertDialog alert = builder.create();

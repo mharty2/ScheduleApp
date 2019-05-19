@@ -79,6 +79,7 @@ public class CourseSearchAdapter extends RecyclerView.Adapter<CourseSearchAdapte
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         toCreateSchedule(i);
+                        /** save for reference
                         Map<String, CourseInfo> course = new HashMap<>();
                         course.put("course", item);
                         mFirestore.collection(sharedPreferences.getString(PREF_USER_ID_TOKEN, null)).add(course).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
@@ -93,6 +94,7 @@ public class CourseSearchAdapter extends RecyclerView.Adapter<CourseSearchAdapte
                                 Log.d("tag", e.toString());
                             }
                         });
+                         */
                         toCreateSchedule(i);
                     }
                 });

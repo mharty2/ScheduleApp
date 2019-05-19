@@ -15,6 +15,8 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.LinkedHashSet;
 import java.util.Map;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -38,6 +40,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class createSchedule extends AppCompatActivity {
     private String name;
@@ -66,10 +69,13 @@ public class createSchedule extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new CreateScheduleAdapter(schedule, this);
         recyclerView.setAdapter(adapter);
+        //loadRecyclerViewData();
+        /**
+         * keep this code for later reference.
         try {
             mAuth = FirebaseAuth.getInstance();
             mAuth.signInWithCustomToken(sharedPreferences.getString(PREF_USER_ID_TOKEN, null));
-            Toast.makeText(createSchedule.this, "Authentication with Shared Preferences worked", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(createSchedule.this, "Authentication with Shared Preferences worked", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             mAuth.signInAnonymously()
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -92,7 +98,7 @@ public class createSchedule extends AppCompatActivity {
                             // ...
                         }
                     });
-        }
+        } */
     }
 
     @Override
@@ -105,6 +111,7 @@ public class createSchedule extends AppCompatActivity {
         if (toAdd != null) {
             schedule.add(toAdd);
         }
+        checkForDuplicates();
         Log.d("schedule check","stored schedule: " + schedule);
         Log.d("schedule check pt.2","stored schedule size: " + schedule.size());
         adapter = new CreateScheduleAdapter(schedule, createSchedule.this);
@@ -128,6 +135,15 @@ public class createSchedule extends AppCompatActivity {
         startActivityForResult(intent, 1337);
     }
 
+    void checkForDuplicates() {
+        if (schedule != null) {
+            Set<CourseInfo> set = new LinkedHashSet<>();
+            set.addAll(schedule);
+            schedule.clear();
+            schedule.addAll(set);
+        }
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d("onActivityResult", "onActivityResult reached");
@@ -144,7 +160,7 @@ public class createSchedule extends AppCompatActivity {
 
     void saveSchedule() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Save Schedule?");
+        builder.setTitle("Please name your schedule");
 
         // Set up the input
         final EditText input = new EditText(this);
@@ -161,11 +177,18 @@ public class createSchedule extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 name = input.getText().toString();
-
-                Schedule scheduleClasses = new Schedule();
+                if(name == null || name.equals("")) {
+                    //need to figure out how to relay this to the user because it happens too fast for them to see atm.
+                    input.setHint("Schedule must have a name!");
+                    return;
+                }
+                //Is the empty constructor necessary for parcelable? I changed it to correspond with the other constructor
+                //Even then, we might not need the parcelable part for the schedule once we have firebase working
+                Schedule scheduleClasses = new Schedule(name);
                 for (CourseInfo current : schedule) {
                     scheduleClasses.addCourse(current);
                 }
+                //For demo purposes right?
                 Intent intent = new Intent(createSchedule.this, joshMapScreen.class);
                 Bundle scheduleBundle = new Bundle();
                 scheduleBundle.putParcelable("schedule", scheduleClasses);

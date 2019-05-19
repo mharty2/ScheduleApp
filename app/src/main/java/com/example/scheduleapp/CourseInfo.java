@@ -90,6 +90,10 @@ public class CourseInfo implements Parcelable {
         dest.writeString(creditHours);
         dest.writeString(crn);
     }
+    //I think all CRNs are unique, right?
+    public boolean equals(CourseInfo other) {
+        return this.getCrn().equals(other.getCrn());
+    }
 
     @SuppressWarnings("unused")
     public static final Parcelable.Creator<CourseInfo> CREATOR = new Parcelable.Creator<CourseInfo>() {
