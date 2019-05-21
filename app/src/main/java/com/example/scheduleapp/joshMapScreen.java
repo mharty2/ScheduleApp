@@ -33,15 +33,19 @@ public class joshMapScreen extends AppCompatActivity {
 
     //Variables
     private Schedule differentSchedule;
+
     private GoogleMap mMap;
     private Schedule currentSchedule;
+
     //ToDo: get current day from day spinner
     private String currentDay;
+
     private int counter = 0;
     private JsonParser parser = new JsonParser();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        TextView time = findViewById(R.id.joshMapScreenTime);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_josh_map_screen);
 
