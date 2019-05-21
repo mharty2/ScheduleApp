@@ -12,7 +12,11 @@ import com.google.android.gms.common.GoogleApiAvailability;
 
 public class ChooseSchedule extends AppCompatActivity {
 
+    //Tag for debugging
     private static final String TAG = "ChooseSchedule";
+
+    //Variables
+    private boolean mLocationPermissionGranted = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,14 +48,9 @@ public class ChooseSchedule extends AppCompatActivity {
     }
 
     void joshMapScreen() {
-        if (isServicesOK()) {
-            Intent intent = new Intent(ChooseSchedule.this, joshMapScreen.class);
-            startActivity(intent);
-            finish();
-        } else {
-            Log.d(TAG, "joshMapScreen: error with services");
-            Toast.makeText(this, "Map failed to launch", Toast.LENGTH_SHORT).show();
-        }
+        Intent intent = new Intent(ChooseSchedule.this, joshMapScreen.class);
+        startActivity(intent);
+        finish();
     }
 
     void createSchedule() {

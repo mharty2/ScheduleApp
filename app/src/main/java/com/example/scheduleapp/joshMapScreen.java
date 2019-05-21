@@ -44,12 +44,10 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
     private Boolean mLocationPermissionsGranted = false;
     private GoogleMap mMap;
     private Schedule currentSchedule;
-
-    //ToDo: get current day from day spinner
-    private String currentDay;
-
+    TextView time = findViewById(R.id.joshMapScreenTime);
     private int counter = 0;
     private JsonParser parser = new JsonParser();
+    Spinner spinner = (Spinner) findViewById(R.id.joshMapScreenDaySpin);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,25 +55,10 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_josh_map_screen);
 
-        TextView time = findViewById(R.id.joshMapScreenTime);
+        initSpinner();
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.joshMapScreenFragment);
         mapFragment.getMapAsync(this);
-
-        //getLocationPermission();
-
-        //Making spinner functional
-        Spinner spinner = (Spinner) findViewById(R.id.joshMapScreenDaySpin);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.daysOfTheWeek,
-                android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-
-        currentDay = spinner.getSelectedItem().toString();
-
-        //SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.joshMapScreenFragment);
-        //mapFragment.getMapAsync(this);
 
         //Intent intent = getIntent();
         //differentSchedule = intent.getExtras().getParcelable("schedule");
@@ -85,69 +68,23 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
         //currentSchedule = GET SAVED SCHEDULE SOMEHOW\
 
     }
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        Toast.makeText(this, "Map is Ready", Toast.LENGTH_SHORT).show();
-        Log.d(TAG, "onMapReady: Map is Ready");
         LatLng sydney = new LatLng(-33.852, 151.211);
         googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 
-    private void initMap() {
-        Log.d(TAG, "initMap: initializing map");
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.joshMapScreenFragment);
-
-        mapFragment.getMapAsync(joshMapScreen.this);
-    }
-
-    private void getLocationPermission() {
-        Log.d(TAG, "getLocationPermission: getting location permissions");
-        String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.ACCESS_COARSE_LOCATION};
-
-        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
-                FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            Log.d(TAG, "getLocationPermission: first check passed");
-            if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
-                    COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                Log.d(TAG, "getLocationPermission: second check passed, boolean set true");
-                mLocationPermissionsGranted = true;
-            } else {
-                ActivityCompat.requestPermissions(this,
-                        permissions,
-                        LOCATION_PERMISSION_REQUEST_CODE);
-            }
-        }
-        Log.d(TAG, "getLocationPermission: exited if statement");
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        Log.d(TAG, "onRequestPermissionsResult: called");
-        mLocationPermissionsGranted = false;
-
-        switch(requestCode) {
-            case LOCATION_PERMISSION_REQUEST_CODE: {
-                if(grantResults.length > 0) {
-                    for (int i = 0; i < grantResults.length; i++) {
-                        if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
-                            mLocationPermissionsGranted = false;
-                            Log.d(TAG, "onRequestPermissionsResult: permission failed");
-                            return;
-                        }
-                    }
-                    mLocationPermissionsGranted = true;
-                    Log.d(TAG, "onRequestPermissionsResult: permission granted");
-                    initMap();
-                }
-            }
-        }
+    //Helper functions
+    void initSpinner() {
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.daysOfTheWeek,
+                android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
     }
 
     void setTime() {
-        TextView time = (TextView) findViewById(R.id.joshMapScreenTime);
         time.setText("");
         time.setText(parseDistanceTime(getDistanceMatrixJson()));
     }
@@ -155,6 +92,24 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
     void nextClass() {
         counter++;
         setTime();
+    }
+    
+    private List<CourseInfo> getCurrentDayList() {
+        Log.d(TAG, "getCurrentDayList: Reached");
+        String currentDay = spinner.getSelectedItem().toString();
+        if (currentDay.equals("Monday")) {
+            return currentSchedule.getMonday();
+        } else if (currentDay.equals("Tuesday")) {
+            return currentSchedule.getTuesday();
+        } else if (currentDay.equals("Wednesday")) {
+            return currentSchedule.getWednesday();
+        } else if (currentDay.equals("Thursday")) {
+            return currentSchedule.getThursday();
+        } else if (currentDay.equals("Friday")) {
+            return currentSchedule.getFriday();
+        }
+        Log.d(TAG, "getCurrentDayList: Returned null");
+        return null;
     }
 
     private String checkForSpaces(String input) {
@@ -164,32 +119,34 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
         return input;
     }
 
-    //Need to fix
-    private JsonObject getGeocodeJson() {
-        if (currentDay == null) {
-            currentDay = "Monday";
-        }
-        String urlStart = "https://maps.googleapis.com/maps/api/geocode/json?address=";
-        String urlAddress = currentSchedule.schedule.get(currentDay).get(counter).getLocation();
-        String urlEnd = "&key=AIzaSyCi6iFmEMZZOweaUQyA60i86HE90mV4XpU";
-        String urlTotal = urlStart + urlAddress + urlEnd;
-        Log.d("GeocodeUrl", urlTotal);
-        HttpGetRequest getRequest = new HttpGetRequest();
-        try {
-            return parser.parse(getRequest.execute(urlTotal).get()).getAsJsonObject();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
+    //Parsing functions
     private JsonObject getDistanceMatrixJson() {
+        Log.d(TAG, "getDistanceMatrixJson: Reached");
         String urlStart = "https://maps.googleapis.com/maps/api/distancematrix/json?mode=walking";
-        String urlOrigins = "&origins=" + checkForSpaces(currentSchedule.schedule.get(currentDay).get(counter).getLocation());
-        String urlDestinations = "&destinations=" + checkForSpaces(currentSchedule.schedule.get(currentDay).get(counter + 1).getLocation());
-        String urlEnd = "&key=AIzaSyCi6iFmEMZZOweaUQyA60i86HE90mV4XpU";
+        String urlOrigins = "&origins=" + checkForSpaces(getCurrentDayList().get(counter).getLocation());
+        String urlDestinations = "&destinations=" + checkForSpaces(getCurrentDayList().get(counter + 1).getLocation());
+        String urlEnd = "&key=" + "@string/google_maps_key";
         String urlTotal = urlStart + urlOrigins + urlDestinations + urlEnd;
-        Log.d("DistanceMatrixUrl", urlTotal);
+        //Toast.makeText(joshMapScreen.this, "Url used: " + urlTotal, Toast.LENGTH_SHORT);
+        Log.d(TAG, "getDistanceMatrixJson total url used: " + urlTotal);
+        HttpGetRequest getRequest = new HttpGetRequest();
+        try {
+            Log.d(TAG, "getDistanceMatrixJson: JsonObject successfully returned");
+            return parser.parse(getRequest.execute(urlTotal).get()).getAsJsonObject();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }    
+    
+    private JsonObject getGeocodeJson() {
+        Log.d(TAG, "getGeocodeJson: Reached");
+        String urlStart = "https://maps.googleapis.com/maps/api/geocode/json?address=";
+        String urlAddress = checkForSpaces(getCurrentDayList().get(counter).getLocation());
+        String urlEnd = "&key=" + "@string/google_maps_key";
+        String urlTotal = urlStart + urlAddress + urlEnd;
+        //Toast.makeText(joshMapScreen.this, "Url used: " + urlTotal, Toast.LENGTH_SHORT);
+        Log.d(TAG, "getGeocodeJson total url used: " + urlTotal);
         HttpGetRequest getRequest = new HttpGetRequest();
         try {
             return parser.parse(getRequest.execute(urlTotal).get()).getAsJsonObject();
@@ -198,45 +155,54 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
         }
         return null;
     }
-
+    
     private String parseDistanceTime(JsonObject toParse) {
+        Log.d(TAG, "parseDistanceTime: Reached");
         try {
+            Log.d(TAG, "parseDistanceTime: Parsing started");
             JsonArray rows = toParse.getAsJsonArray("rows");
             JsonObject object = rows.get(0).getAsJsonObject();
             JsonArray elements = object.get("elements").getAsJsonArray();
             JsonObject object2 = elements.get(0).getAsJsonObject();
             JsonObject duration = object2.get("duration").getAsJsonObject();
+            Log.d(TAG, "parseDistanceTime: Parsing ended");
             return duration.get("text").getAsString();
         } catch (Exception e) {
-            Log.d("Parsing error", "you done messed up son");
+            Log.d(TAG, "parseDistanceTime: Parsing error");
             e.printStackTrace();
         }
         return null;
     }
 
-    //Need to fix
     private String parseLat(JsonObject toParse) {
+        Log.d(TAG, "parseLat: Reached");
         try {
+            Log.d(TAG, "parseLat: Parsing started");
             JsonArray results = toParse.getAsJsonArray("results");
-            JsonObject geometry = results.get(2).getAsJsonObject();
+            JsonObject object = results.get(0).getAsJsonObject();
+            JsonObject geometry = object.getAsJsonObject("geometry");
             JsonObject location = geometry.get("location").getAsJsonObject();
+            Log.d(TAG, "parseLat: Parsing ended");
             return location.get("lat").getAsString();
         } catch (Exception e) {
-            Log.d("Parsing error", "you done messed up son");
+            Log.d(TAG, "parseLat: Parsing error");
             e.printStackTrace();
         }
         return null;
     }
 
-    //Need to fix
     private String parseLong(JsonObject toParse) {
+        Log.d(TAG, "parseLong: Reached");
         try {
+            Log.d(TAG, "parseLong: Parsing started");
             JsonArray results = toParse.getAsJsonArray("results");
-            JsonObject geometry = results.get(2).getAsJsonObject();
+            JsonObject object = results.get(0).getAsJsonObject();
+            JsonObject geometry = object.getAsJsonObject("geometry");
             JsonObject location = geometry.get("location").getAsJsonObject();
+            Log.d(TAG, "parseLong: Parsing ended");
             return location.get("lng").getAsString();
         } catch (Exception e) {
-            Log.d("Parsing error", "you done messed up son");
+            Log.d(TAG, "parseLong: Parsing error");
             e.printStackTrace();
         }
         return null;

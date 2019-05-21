@@ -31,7 +31,21 @@ public class Schedule implements Parcelable {
         this.name = name;
     }
 
-
+    public List<CourseInfo> getMonday() {
+        return monday;
+    }
+    public List<CourseInfo> getTuesday() {
+        return tuesday;
+    }
+    public List<CourseInfo> getWednesday() {
+        return wednesday;
+    }
+    public List<CourseInfo> getThursday() {
+        return thursday;
+    }
+    public List<CourseInfo> getFriday() {
+        return friday;
+    }
 
     public void addCourse(CourseInfo course) {
         if (course.getDays().contains("M")) {
@@ -96,6 +110,7 @@ public class Schedule implements Parcelable {
         return -1;
     }
 
+    //Parcel functions
     protected Schedule(Parcel in) {
         name = in.readString();
         if (in.readByte() == 0x01) {
@@ -129,12 +144,10 @@ public class Schedule implements Parcelable {
             friday = null;
         }
     }
-
     @Override
     public int describeContents() {
         return 0;
     }
-
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(name);
@@ -169,7 +182,6 @@ public class Schedule implements Parcelable {
             dest.writeList(friday);
         }
     }
-
     @SuppressWarnings("unused")
     public static final Parcelable.Creator<Schedule> CREATOR = new Parcelable.Creator<Schedule>() {
         @Override
@@ -182,25 +194,4 @@ public class Schedule implements Parcelable {
             return new Schedule[size];
         }
     };
-
-
-    public List<CourseInfo> getMonday() {
-        return monday;
-    }
-
-    public List<CourseInfo> getTuesday() {
-        return tuesday;
-    }
-
-    public List<CourseInfo> getWednesday() {
-        return wednesday;
-    }
-
-    public List<CourseInfo> getThursday() {
-        return thursday;
-    }
-
-    public List<CourseInfo> getFriday() {
-        return friday;
-    }
 }
