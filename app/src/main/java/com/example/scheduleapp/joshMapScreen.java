@@ -1,6 +1,10 @@
 package com.example.scheduleapp;
 
+import android.Manifest;
+import android.app.Dialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -8,6 +12,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -18,22 +24,29 @@ import java.util.List;
 
 public class joshMapScreen extends AppCompatActivity {
 
-    private Schedule differentSchedule;
+    //Tag for debugging
+    private static final String TAG = "JoshMapScreen";
 
+    //Global Variables
+    private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
+    private static final String COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
+
+    //Variables
+    private Schedule differentSchedule;
     private GoogleMap mMap;
     private Schedule currentSchedule;
-
     //ToDo: get current day from day spinner
     private String currentDay;
-
     private int counter = 0;
     private JsonParser parser = new JsonParser();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        TextView time = findViewById(R.id.joshMapScreenTime);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_josh_map_screen);
+
+        TextView time = findViewById(R.id.joshMapScreenTime);
+
 
         //Making spinner functional
         Spinner spinner = (Spinner) findViewById(R.id.joshMapScreenDaySpin);
@@ -64,21 +77,38 @@ public class joshMapScreen extends AppCompatActivity {
 
     }
 
-    //JOSH GIVES UP!
-    /*@Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-        // Do stuff with the map here!
-        LatLng sydney = new LatLng(-33.852, 151.211);
-        googleMap.addMarker(new MarkerOptions().position(sydney)
-                .title("Marker in Sydney"));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-    }
-
-    void reload() {
-        getGeocodeJson();
-        getDistanceMatrixJson();
+    //TODO Put this in right place. Should be on button TO the map screen. Look @ CodingWithMitch "Google Maps API Setup (part2)"
+    //Test if user has most updated google services
+    /*public boolean isServicesOK() {
+        Log.d(TAG, "isServicesOK: Checking Google services version");
+        int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(joshMapScreen.this);
+        if (available == ConnectionResult.SUCCESS) {
+            //Everything is fine and user can make map request
+            Log.d(TAG, "isServicesOK: Google Play Services are working");
+            return true;
+        } else if (GoogleApiAvailability.getInstance().isUserResolvableError(available)) {
+            //An error occurred but we can resolve it
+            Log.d(TAG, "isServicesOK: An error occured but we can fix it");
+            Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(joshMapScreen.this, available, 1000);
+            dialog.show();
+        } else {
+            Log.d(TAG, "isServicesOK: Nothing we can do dude");
+        }
+        return false;
     } */
+
+    private void getLocationPermission() {
+        String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.ACCESS_COARSE_LOCATION};
+
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                    COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
+            }
+        }
+    }
 
     void setTime() {
         TextView time = (TextView) findViewById(R.id.joshMapScreenTime);
