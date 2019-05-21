@@ -4,6 +4,8 @@ import android.Manifest;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,9 +13,11 @@ import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -78,14 +82,7 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
 
         /*ToDo: figure out how the Schedule is loaded in. This whole class bases off
         a single stored Schedule (see currentSchedule above) */
-        //currentSchedule = GET SAVED SCHEDULE SOMEHOW
-        List<CourseInfo> monday = new ArrayList<>();
-        monday.add(new CourseInfo("Foellinger Auditorium"));
-        monday.add(new CourseInfo("Altgelt Hall"));
-        currentSchedule = new Schedule();
-        currentSchedule.schedule.put("Monday", monday);
-
-        setTime();
+        //currentSchedule = GET SAVED SCHEDULE SOMEHOW\
 
     }
 
