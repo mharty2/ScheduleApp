@@ -2,6 +2,7 @@ package com.example.scheduleapp;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import java.lang.reflect.Array;
 import java.util.HashMap;
@@ -13,19 +14,13 @@ import java.util.Map.Entry;
 public class Schedule implements Parcelable {
 
     private String name;
-    public HashMap<String, List<CourseInfo>> schedule = new HashMap<>();
     private List<CourseInfo> monday = new ArrayList<>();
     private List<CourseInfo> tuesday = new ArrayList<>();
     private List<CourseInfo> wednesday = new ArrayList<>();
     private List<CourseInfo> thursday = new ArrayList<>();
-    public List<CourseInfo> friday = new ArrayList<>();
+    private List<CourseInfo> friday = new ArrayList<>();
     Schedule(String name) {
         this.name = name;
-        schedule.put("Monday", monday);
-        schedule.put("Tuesday", tuesday);
-        schedule.put("Wednesday", wednesday);
-        schedule.put("Thursday", thursday);
-        schedule.put("Friday", friday);
     }
     Schedule() { }
     public String getName() {
@@ -57,9 +52,11 @@ public class Schedule implements Parcelable {
         sortSchedule();
     }
     private void sortSchedule() {
-        for(Map.Entry<String, List<CourseInfo>> entry : schedule.entrySet()) {
-            sortByTime(entry.getValue());
-        }
+        sortByTime(monday);
+        sortByTime(tuesday);
+        sortByTime(wednesday);
+        sortByTime(thursday);
+        sortByTime(friday);
     }
     private void sortByTime(List<CourseInfo> input) {
         for (int i = 1; i < input.size(); i++) {
@@ -185,4 +182,25 @@ public class Schedule implements Parcelable {
             return new Schedule[size];
         }
     };
+
+
+    public List<CourseInfo> getMonday() {
+        return monday;
+    }
+
+    public List<CourseInfo> getTuesday() {
+        return tuesday;
+    }
+
+    public List<CourseInfo> getWednesday() {
+        return wednesday;
+    }
+
+    public List<CourseInfo> getThursday() {
+        return thursday;
+    }
+
+    public List<CourseInfo> getFriday() {
+        return friday;
+    }
 }

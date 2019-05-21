@@ -95,7 +95,7 @@ public class CourseSearchAdapter extends RecyclerView.Adapter<CourseSearchAdapte
                             }
                         });
                          */
-                        toCreateSchedule(i);
+                        //toCreateSchedule(i);
                     }
                 });
                 builder.setNegativeButton("no", new DialogInterface.OnClickListener() {

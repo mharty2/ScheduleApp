@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class joshMapScreen extends AppCompatActivity {
-
+/**
     private Schedule differentSchedule;
 
     private GoogleMap mMap;
@@ -52,7 +52,7 @@ public class joshMapScreen extends AppCompatActivity {
         //differentSchedule = intent.getExtras().getParcelable("schedule");
 
         /*ToDo: figure out how the Schedule is loaded in. This whole class bases off
-        a single stored Schedule (see currentSchedule above) */
+        a single stored Schedule (see currentSchedule above)
         //currentSchedule = GET SAVED SCHEDULE SOMEHOW
         List<CourseInfo> monday = new ArrayList<>();
         monday.add(new CourseInfo("Foellinger Auditorium"));
@@ -65,7 +65,7 @@ public class joshMapScreen extends AppCompatActivity {
     }
 
     //JOSH GIVES UP!
-    /*@Override
+    @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         // Do stuff with the map here!
@@ -78,7 +78,7 @@ public class joshMapScreen extends AppCompatActivity {
     void reload() {
         getGeocodeJson();
         getDistanceMatrixJson();
-    } */
+    }
 
     void setTime() {
         TextView time = (TextView) findViewById(R.id.joshMapScreenTime);
@@ -175,4 +175,5 @@ public class joshMapScreen extends AppCompatActivity {
         }
         return null;
     }
-}
+ */
+    }

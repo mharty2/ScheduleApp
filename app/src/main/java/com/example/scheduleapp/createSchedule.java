@@ -53,7 +53,10 @@ public class createSchedule extends AppCompatActivity {
     private static final String PREF_USER_ID_TOKEN = "UserIdToken";
     private SharedPreferences sharedPreferences;
     private FirebaseAuth mAuth;
-    private FirebaseFirestore mFirestore;
+    private FirebaseFirestore db;
+    private CollectionReference usersCollecRef;
+    private DocumentReference userDocRef;
+    private CollectionReference usersSchedulesCollec;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +67,7 @@ public class createSchedule extends AppCompatActivity {
         findViewById(R.id.createScheduleCancel).setOnClickListener(v -> cancel());
         findViewById(R.id.create).setOnClickListener(v -> addCourse());
         findViewById(R.id.create_schedule_save).setOnClickListener(v -> saveSchedule());
-        mFirestore = FirebaseFirestore.getInstance();
+        db = FirebaseFirestore.getInstance();
         sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -97,6 +100,9 @@ public class createSchedule extends AppCompatActivity {
                         }
                     });
         }
+        usersCollecRef = db.collection("Users");
+        userDocRef = db.collection("Users").document(sharedPreferences.getString(PREF_USER_ID_TOKEN, null));
+        usersSchedulesCollec = userDocRef.collection("Schedules");
     }
 
     @Override
@@ -187,14 +193,16 @@ public class createSchedule extends AppCompatActivity {
                     scheduleClasses.addCourse(current);
                 }
 
-                Map<String, Schedule> scheduleMap = new HashMap<>();
-                scheduleMap.put(scheduleClasses.getName(), scheduleClasses);
-                mFirestore.collection(sharedPreferences.getString(PREF_USER_ID_TOKEN, null)).add(scheduleMap).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                //Map<String, Schedule> scheduleMap = new HashMap<>();
+                //scheduleMap.put(scheduleClasses.getName(), scheduleClasses);
+                usersSchedulesCollec.document(scheduleClasses.getName()).set(scheduleClasses)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
-                    public void onSuccess(DocumentReference documentReference) {
+                    public void onSuccess(Void aVoid) {
                         Toast.makeText(createSchedule.this, "schedule added to Firestore", Toast.LENGTH_LONG).show();
                     }
-                }).addOnFailureListener(new OnFailureListener() {
+                })
+                .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Toast.makeText(createSchedule.this, "schedule addition failed" + e, Toast.LENGTH_LONG).show();
@@ -203,6 +211,7 @@ public class createSchedule extends AppCompatActivity {
                 });
 
                 /**
+                 *
                 //For demo purposes right?
                 Intent intent = new Intent(createSchedule.this, joshMapScreen.class);
                 Bundle scheduleBundle = new Bundle();
