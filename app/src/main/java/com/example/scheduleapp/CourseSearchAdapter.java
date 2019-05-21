@@ -153,12 +153,5 @@ public class CourseSearchAdapter extends RecyclerView.Adapter<CourseSearchAdapte
 
         mActivity.setResult(2, returnIntent);
         mActivity.finish();
-
-        /* Intent intent = new Intent(mActivity, createSchedule.class);
-        Bundle storedCourse = new Bundle();
-        storedCourse.putParcelable("storedCourse", listItems.get(i));
-        intent.putExtras(storedCourse);
-        mActivity.startActivity(intent);
-        mActivity.finish(); */
     }
 }

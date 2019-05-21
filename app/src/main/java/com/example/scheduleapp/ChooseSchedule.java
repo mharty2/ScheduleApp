@@ -17,6 +17,7 @@ public class ChooseSchedule extends AppCompatActivity {
 
     //Variables
     private boolean mLocationPermissionGranted = false;
+    private Schedule testSchedule;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,30 +26,39 @@ public class ChooseSchedule extends AppCompatActivity {
         findViewById(R.id.CreateSchedule).setOnClickListener(v -> createSchedule());
         findViewById(R.id.LoadSchedule).setOnClickListener(v -> loadSchedule());
         findViewById(R.id.test).setOnClickListener(v -> joshMapScreen());
-    }
 
-
-    //Test if user has most updated google services
-    public boolean isServicesOK() {
-        Log.d(TAG, "isServicesOK: Checking Google services version");
-        int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(ChooseSchedule.this);
-        if (available == ConnectionResult.SUCCESS) {
-            //Everything is fine and user can make map request
-            Log.d(TAG, "isServicesOK: Google Play Services are working");
-            return true;
-        } else if (GoogleApiAvailability.getInstance().isUserResolvableError(available)) {
-            //An error occurred but we can resolve it
-            Log.d(TAG, "isServicesOK: An error occured but we can fix it");
-            Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(ChooseSchedule.this, available, 1000);
-            dialog.show();
-        } else {
-            Log.d(TAG, "isServicesOK: Nothing we can do dude");
-        }
-        return false;
+        testSchedule = new Schedule("Test");
+        testSchedule.addCourse(new CourseInfo("Intro to Diff Eq",
+                "Lecture - Discussion",
+                "C1",
+                "10:00 AM - 10:50 AM",
+                "MWF",
+                "Altgelt Hall",
+                "3",
+                "51206"));
+        testSchedule.addCourse(new CourseInfo("Physics: Elec & Magnet",
+                "Lecture",
+                "A3",
+                "11:00 AM - 11:50 AM",
+                "MWF",
+                "Loomis Laboratory",
+                "3",
+                "12345"));
+        testSchedule.addCourse(new CourseInfo("Introduction to Statics",
+                "Discussion",
+                "ADB",
+                "12:00 AM - 12:50 AM",
+                "MWF",
+                "Engineering Hall",
+                "3",
+                "33414"));
     }
 
     void joshMapScreen() {
         Intent intent = new Intent(ChooseSchedule.this, joshMapScreen.class);
+        Bundle testScheduleBundle = new Bundle();
+        testScheduleBundle.putParcelable("TestSchedule", testSchedule);
+        intent.putExtras(testScheduleBundle);
         startActivity(intent);
         finish();
     }
