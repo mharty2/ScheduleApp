@@ -11,7 +11,8 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class Schedule implements Parcelable {
+public class Schedule //implements Parcelable
+    {
 
     private String name;
     private List<CourseInfo> monday = new ArrayList<>();
@@ -19,6 +20,8 @@ public class Schedule implements Parcelable {
     private List<CourseInfo> wednesday = new ArrayList<>();
     private List<CourseInfo> thursday = new ArrayList<>();
     private List<CourseInfo> friday = new ArrayList<>();
+    private List<CourseInfo> classList = new ArrayList<>();
+
     Schedule(String name) {
         this.name = name;
     }
@@ -63,7 +66,12 @@ public class Schedule implements Parcelable {
         if (course.getDays().contains("F")) {
             friday.add(course);
         }
+        classList.add(course);
         sortSchedule();
+    }
+
+    public String stringify() {
+        return name + "\n" + monday + "\n" + tuesday+ "\n" + wednesday+ "\n" + thursday+ "\n" + friday;
     }
     private void sortSchedule() {
         sortByTime(monday);
@@ -109,7 +117,7 @@ public class Schedule implements Parcelable {
         }
         return -1;
     }
-
+/**
     //Parcel functions
     protected Schedule(Parcel in) {
         name = in.readString();
@@ -194,4 +202,32 @@ public class Schedule implements Parcelable {
             return new Schedule[size];
         }
     };
+*/
+    public List<CourseInfo> getClassList() {
+        return classList;
+    }
+
+    public void setClassList(List<CourseInfo> classList) {
+        this.classList = classList;
+    }
+
+    public void setMonday(List<CourseInfo> monday) {
+        this.monday = monday;
+    }
+
+    public void setTuesday(List<CourseInfo> tuesday) {
+        this.tuesday = tuesday;
+    }
+
+    public void setWednesday(List<CourseInfo> wednesday) {
+        this.wednesday = wednesday;
+    }
+
+    public void setThursday(List<CourseInfo> thursday) {
+        this.thursday = thursday;
+    }
+
+    public void setFriday(List<CourseInfo> friday) {
+        this.friday = friday;
+    }
 }
