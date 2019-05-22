@@ -25,7 +25,7 @@ public class ChooseSchedule extends AppCompatActivity {
         setContentView(R.layout.activity_choose_schedule);
         findViewById(R.id.CreateSchedule).setOnClickListener(v -> createSchedule());
         findViewById(R.id.LoadSchedule).setOnClickListener(v -> loadSchedule());
-        findViewById(R.id.test).setOnClickListener(v -> joshMapScreen());
+        //findViewById(R.id.test).setOnClickListener(v -> joshMapScreen());
 
         testSchedule = new Schedule("Test");
         testSchedule.addCourse(new CourseInfo("Intro to Diff Eq",
@@ -53,7 +53,7 @@ public class ChooseSchedule extends AppCompatActivity {
                 "3",
                 "33414"));
     }
-
+/**
     void joshMapScreen() {
         Intent intent = new Intent(ChooseSchedule.this, joshMapScreen.class);
         Bundle testScheduleBundle = new Bundle();
@@ -62,7 +62,7 @@ public class ChooseSchedule extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
-
+*/
     void createSchedule() {
         Intent intent = new Intent(ChooseSchedule.this, createSchedule.class);
         startActivity(intent);

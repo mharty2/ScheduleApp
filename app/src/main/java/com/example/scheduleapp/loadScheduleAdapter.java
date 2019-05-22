@@ -2,15 +2,20 @@ package com.example.scheduleapp;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
 
@@ -21,6 +26,10 @@ public class loadScheduleAdapter extends RecyclerView.Adapter<loadScheduleAdapte
     private AlertDialog alertDialog;
     private AlertDialog.Builder builder;
     SharedPreferences sharedPreferences;
+    private final String KEY_SELECTED_SCHEDULE = "KEY_SELECTED_SCHEDULE";
+    private static final String PREF_USER_ID_TOKEN = "UserIdToken";
+    private static final String PREFS_NAME = "ScheduleApp";
+    private FirebaseAuth mAuth;
 
     public loadScheduleAdapter(List<Schedule> listItems, Activity mActivity) {
         this.listItems = listItems;
@@ -38,7 +47,7 @@ public class loadScheduleAdapter extends RecyclerView.Adapter<loadScheduleAdapte
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
         Schedule item = listItems.get(i);
         viewHolder.scheduleTxtViewHeading.setText(item.getName());
-        viewHolder.scheduleTxtViewClassList.setText(item.getClassList().toString());
+        viewHolder.scheduleTxtViewClassList.setText(item.classListToString());
 
         //when card is clicked
         viewHolder.linearLayout.setOnClickListener(new View.OnClickListener() {
@@ -47,26 +56,17 @@ public class loadScheduleAdapter extends RecyclerView.Adapter<loadScheduleAdapte
                 builder = new AlertDialog.Builder(mActivity);
                 builder.setTitle("Choose schedule \"" + item.getName() + "\" ?");
                 builder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
+                    //once the user confirms the choice, the name is saved to sharedpreferences and can be used to pull it
+                    //to whatever activity needs it
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        //toCreateSchedule(i);
-                        /** save for reference
-                         Map<String, CourseInfo> course = new HashMap<>();
-                         course.put("course", item);
-                         mFirestore.collection(sharedPreferences.getString(PREF_USER_ID_TOKEN, null)).add(course).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                        @Override
-                        public void onSuccess(DocumentReference documentReference) {
-                        Toast.makeText(mActivity, "Class added to Firestore", Toast.LENGTH_LONG).show();
-                        }
-                        }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(mActivity, "Class addition failed" + e, Toast.LENGTH_LONG).show();
-                        Log.d("tag", e.toString());
-                        }
-                        });
-                         */
-                        //toCreateSchedule(i);
+                        mAuth = FirebaseAuth.getInstance();
+                        sharedPreferences = v.getContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+                        mAuth.signInWithCustomToken(sharedPreferences.getString(PREF_USER_ID_TOKEN, null));
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString(KEY_SELECTED_SCHEDULE, item.getName());
+                        editor.apply();
+                        toDailySchedule(v);
                     }
                 });
                 builder.setNegativeButton("no", new DialogInterface.OnClickListener() {
@@ -102,5 +102,11 @@ public class loadScheduleAdapter extends RecyclerView.Adapter<loadScheduleAdapte
             scheduleTxtViewClassList = itemView.findViewById(R.id.scheduleTxtViewClassList);
             linearLayout = itemView.findViewById(R.id.scheduleLinLayout);
         }
+    }
+
+    public void toDailySchedule(View v) {
+        Context context = v.getContext();
+        Intent intent = new Intent(context, dailySchedule.class);
+        context.startActivity(intent);
     }
 }

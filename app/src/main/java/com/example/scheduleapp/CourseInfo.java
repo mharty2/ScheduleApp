@@ -95,6 +95,10 @@ public class CourseInfo implements Parcelable {
         return this.getCrn().equals(other.getCrn());
     }
 
+    public String getBasicInfo() {
+        return name + " - " + type;
+    }
+
     @SuppressWarnings("unused")
     public static final Parcelable.Creator<CourseInfo> CREATOR = new Parcelable.Creator<CourseInfo>() {
         @Override

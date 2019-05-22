@@ -230,4 +230,12 @@ public class Schedule //implements Parcelable
     public void setFriday(List<CourseInfo> friday) {
         this.friday = friday;
     }
+
+    public String classListToString() {
+        String toReturn = "";
+        for (CourseInfo course : classList) {
+            toReturn += "\n" + course.getBasicInfo() + "\n";
+        }
+        return toReturn;
+    }
 }

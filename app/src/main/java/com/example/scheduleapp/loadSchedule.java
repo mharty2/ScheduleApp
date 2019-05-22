@@ -43,7 +43,6 @@ public class loadSchedule extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private final String TAG = "loadSchedule";
-    private TextView textViewTest;
 
 
     @Override
@@ -57,7 +56,6 @@ public class loadSchedule extends AppCompatActivity {
         recyclerView = findViewById(R.id.loadScheduleRecyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        textViewTest = findViewById(R.id.loadScheduleTextView);
     }
     @Override
     public void onStart() {
@@ -106,18 +104,10 @@ public class loadSchedule extends AppCompatActivity {
                         Log.d(TAG, "error with adding: " + e.toString());
                     }
                 }
-                //loadTextView();
                 loadRecyclerViewData();
             }
         });
         //loadRecyclerViewData();
-    }
-    void loadTextView() {
-        String string ="";
-        for (Schedule schedule : scheduleList) {
-            string += schedule.stringify();
-        }
-        textViewTest.setText(string);
     }
     void loadRecyclerViewData() {
         adapter = new loadScheduleAdapter(scheduleList, loadSchedule.this);
