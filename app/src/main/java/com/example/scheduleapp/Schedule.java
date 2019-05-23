@@ -5,6 +5,7 @@ import android.os.Parcelable;
 import android.util.Log;
 
 import java.lang.reflect.Array;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
@@ -80,7 +81,8 @@ public class Schedule //implements Parcelable
         sortByTime(thursday);
         sortByTime(friday);
     }
-    private void sortByTime(List<CourseInfo> input) {
+    /**
+    public void sortByTime(List<CourseInfo> input) {
         for (int i = 1; i < input.size(); i++) {
             for (int j = i - 1; j >= 0; j--) {
                 if (compareTimes(input.get(j).getTime(), input.get(i).getTime()) > 0) {
@@ -92,6 +94,13 @@ public class Schedule //implements Parcelable
             }
         }
     }
+     */
+
+    public void sortByTime(List<CourseInfo> list) {
+        Collections.sort(list, (CourseInfo a, CourseInfo b) -> a.compareTimes(b));
+        Collections.reverse(list);
+    }
+    /**
     private int compareTimes(String a, String b) {
         String[] arr1 = a.split(":");
         String[] arr2 = b.split(":");
@@ -117,6 +126,7 @@ public class Schedule //implements Parcelable
         }
         return -1;
     }
+     */
 /**
     //Parcel functions
     protected Schedule(Parcel in) {

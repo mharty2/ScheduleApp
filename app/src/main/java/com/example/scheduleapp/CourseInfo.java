@@ -74,6 +74,32 @@ public class CourseInfo implements Parcelable {
         crn = in.readString();
     }
 
+    public int compareTimes(CourseInfo courseInfo) {
+        String[] arr1 = getTime().split(":");
+        String[] arr2 = courseInfo.getTime().split(":");
+        int int1 = Integer.parseInt(arr1[0]);
+        int int2 = Integer.parseInt(arr2[0]);
+        if (getTime().contains("PM") && int1 != 12) {
+            int1 += 12;
+        }
+        if (courseInfo.getTime().contains("PM") && int2 != 12) {
+            int2 += 12;
+        }
+        if (getTime().contains("AM") && int1 == 12) {
+            int1 = 0;
+        }
+        if (courseInfo.getTime().contains("AM") && int2 == 12) {
+            int2 = 0;
+        }
+        if (int1 > int2) {
+            return 1;
+        }
+        if (int1 == int2) {
+            return 0;
+        }
+        return -1;
+    }
+
     @Override
     public int describeContents() {
         return 0;
