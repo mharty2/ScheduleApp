@@ -98,6 +98,7 @@ public class Schedule //implements Parcelable
 
     public void sortByTime(List<CourseInfo> list) {
         Collections.sort(list, (CourseInfo a, CourseInfo b) -> a.compareTimes(b));
+        //todo make it right the first time lol
         Collections.reverse(list);
     }
     /**

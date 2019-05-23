@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
@@ -63,6 +64,7 @@ public class dailySchedule extends AppCompatActivity {
         next.setOnClickListener(v -> nextDay());
         prev.setOnClickListener(v -> previousDay());
         recyclerView = findViewById(R.id.recyclerViewDaily);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
     @Override
@@ -179,9 +181,6 @@ public class dailySchedule extends AppCompatActivity {
         schedule.sortByTime(currentDayList);
         Log.d("TAG", "Schedule size: " + currentDayList.size());
         Log.d("TAG", "Schedule: " + currentDayList);
-        TextView txt = findViewById(R.id.textViewDailyTest);
-        txt.setMovementMethod(new ScrollingMovementMethod());
-        txt.setText(schedule.dailyToString(currentDayList));
         adapter = new dailyScheduleAdapter(currentDayList, dailySchedule.this);
         recyclerView.setAdapter(adapter);
 
