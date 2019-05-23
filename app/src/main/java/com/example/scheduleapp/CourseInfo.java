@@ -111,4 +111,36 @@ public class CourseInfo implements Parcelable {
             return new CourseInfo[size];
         }
     };
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setSection(String section) {
+        this.section = section;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public void setDays(String days) {
+        this.days = days;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public void setCreditHours(String creditHours) {
+        this.creditHours = creditHours;
+    }
+
+    public void setCrn(String crn) {
+        this.crn = crn;
+    }
 }

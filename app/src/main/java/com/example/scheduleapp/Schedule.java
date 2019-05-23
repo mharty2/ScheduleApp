@@ -238,4 +238,19 @@ public class Schedule //implements Parcelable
         }
         return toReturn;
     }
+
+    public String dailyToString(List<CourseInfo> list) {
+        String toReturn ="";
+        for (CourseInfo course : list) {
+            toReturn += course.getName() + " - " + course.getType() + "\n\n";
+            toReturn += course.getSection() +"\n\n";
+            toReturn += course.getTime() +"\n\n";
+            toReturn += course.getDays() +"\n\n";
+            toReturn += course.getLocation() +"\n\n";
+            toReturn += course.getCreditHours() +"\n\n";
+            toReturn += course.getCrn() +"\n\n";
+            toReturn += "\n\n\n";
+        }
+        return toReturn;
+    }
 }
