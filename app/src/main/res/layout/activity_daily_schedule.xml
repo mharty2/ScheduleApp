@@ -91,7 +91,7 @@
         app:layout_constraintVertical_bias="0.97" />
 
     <Button
-        android:id="@+id/goToMapbtn"
+        android:id="@+id/buttonDailyToMap"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"

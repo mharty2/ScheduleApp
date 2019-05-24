@@ -3,6 +3,7 @@ package com.example.scheduleapp;
 import android.Manifest;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -26,7 +27,14 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.api.LogDescriptor;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -42,13 +50,25 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final String COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
+    private final String KEY_SELECTED_SCHEDULE = "KEY_SELECTED_SCHEDULE";
+    private static final String PREF_USER_ID_TOKEN = "UserIdToken";
+    private static final String PREFS_NAME = "ScheduleApp";
+    private static final String KEY_SELECTED_DAY = "KEY_SELECTED_DAY";
 
     //Variables
     private Boolean mLocationPermissionsGranted = false;
     private GoogleMap mMap;
-    private Schedule currentSchedule;
+    private Schedule schedule;
     private int counter = 0;
     private JsonParser parser = new JsonParser();
+    private SharedPreferences sharedPreferences;
+    private FirebaseAuth mAuth;
+    private DocumentReference userDocRef;
+    private CollectionReference usersSchedulesCollec;
+    private FirebaseFirestore db;
+    private List<CourseInfo> currentDayList;
+    private String currentDay;
+    private String scheduleName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,16 +76,48 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_josh_map_screen);
 
-        initSpinner();
+        sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        db = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
 
-        Intent getIntent = getIntent();
-        currentSchedule = getIntent.getExtras().getParcelable("TestSchedule");
+        initSpinner();
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.joshMapScreenFragment);
         mapFragment.getMapAsync(this);
 
-        findViewById(R.id.joshMapScreenNext).setOnClickListener(v -> next());
-        findViewById(R.id.joshMapScreenBack).setOnClickListener(v -> back());
+        //findViewById(R.id.joshMapScreenNext).setOnClickListener(v -> next());
+        //findViewById(R.id.joshMapScreenBack).setOnClickListener(v -> back());
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mAuth.signInWithCustomToken(sharedPreferences.getString(PREF_USER_ID_TOKEN, null));
+        userDocRef = db.collection("Users").document(sharedPreferences.getString(PREF_USER_ID_TOKEN, null));
+        usersSchedulesCollec = userDocRef.collection("Schedules");
+        scheduleName = sharedPreferences.getString(KEY_SELECTED_SCHEDULE, null);
+        //if we want to make the default the day they clicked "see mapview" on. needs a method for assigning the list then.
+        currentDay = sharedPreferences.getString(KEY_SELECTED_DAY, null);
+    }
+
+    //Async task
+    public void loadSchedule() {
+        usersSchedulesCollec.document(scheduleName).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                schedule = documentSnapshot.toObject(Schedule.class);
+                //doStuff
+                currentDayList = getCurrentDayList();
+                if (currentDayList == null) {
+                    //toDo throw error dialogue
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG, "onFailure: " + e.toString());
+            }
+        });
     }
 
     //Function for handling map
@@ -93,6 +145,7 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
     //Helper functions
     void updateMap() {
         mMap.clear();
+        loadSchedule();
         double lat1 = parseLat(getGeocodeJson(counter));
         double lng1 = parseLong(getGeocodeJson(counter));
         LatLng firstLocation = new LatLng(lat1, lng1);
@@ -133,16 +186,18 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
         Log.d(TAG, "getCurrentDayList: Reached");
         Spinner spinner = (Spinner) findViewById(R.id.joshMapScreenDaySpin);
         String currentDay = spinner.getSelectedItem().toString();
+        Log.d(TAG, "schedule: " + schedule);
+        Log.d(TAG, "currentDay: " + currentDay);
         if (currentDay.equals("Monday")) {
-            return currentSchedule.getMonday();
+            return schedule.getMonday();
         } else if (currentDay.equals("Tuesday")) {
-            return currentSchedule.getTuesday();
+            return schedule.getTuesday();
         } else if (currentDay.equals("Wednesday")) {
-            return currentSchedule.getWednesday();
+            return schedule.getWednesday();
         } else if (currentDay.equals("Thursday")) {
-            return currentSchedule.getThursday();
+            return schedule.getThursday();
         } else if (currentDay.equals("Friday")) {
-            return currentSchedule.getFriday();
+            return schedule.getFriday();
         }
         Log.d(TAG, "getCurrentDayList: Returned null");
         return null;

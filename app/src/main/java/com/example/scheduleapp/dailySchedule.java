@@ -32,6 +32,7 @@ public class dailySchedule extends AppCompatActivity {
     private final String KEY_SELECTED_SCHEDULE = "KEY_SELECTED_SCHEDULE";
     private static final String PREF_USER_ID_TOKEN = "UserIdToken";
     private static final String PREFS_NAME = "ScheduleApp";
+    private static final String KEY_SELECTED_DAY = "KEY_SELECTED_DAY";
     private SharedPreferences sharedPreferences;
     private FirebaseAuth mAuth;
     private Schedule schedule;
@@ -44,6 +45,7 @@ public class dailySchedule extends AppCompatActivity {
     private TextView txtViewDay;
     private Button next;
     private Button prev;
+    private Button map;
     private List<CourseInfo> currentDayList;
     private String currentDay;
     private RecyclerView.Adapter adapter;
@@ -53,7 +55,6 @@ public class dailySchedule extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_daily_schedule);
         findViewById(R.id.daily_home).setOnClickListener(v->home());
-        findViewById(R.id.goToMapbtn).setOnClickListener(v -> toMap());
         mAuth = FirebaseAuth.getInstance();
         sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         db = FirebaseFirestore.getInstance();
@@ -62,6 +63,7 @@ public class dailySchedule extends AppCompatActivity {
         next = findViewById(R.id.daily_next);
         prev = findViewById(R.id.daily_previous);
         next.setOnClickListener(v -> nextDay());
+        map = findViewById(R.id.buttonDailyToMap);
         prev.setOnClickListener(v -> previousDay());
         recyclerView = findViewById(R.id.recyclerViewDaily);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -99,6 +101,7 @@ public class dailySchedule extends AppCompatActivity {
                         updateUI();
                         next.setOnClickListener(v -> nextDay());
                         prev.setOnClickListener(v -> previousDay());
+                        map.setOnClickListener(v-> toMap());
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -217,7 +220,10 @@ public class dailySchedule extends AppCompatActivity {
         finish();
     }
     void toMap() {
-        Intent intent = new Intent(dailySchedule.this, mapScreen.class);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(KEY_SELECTED_DAY, currentDay);
+        editor.apply();
+        Intent intent = new Intent(dailySchedule.this, joshMapScreen.class);
         startActivity(intent);
         finish();
     }
