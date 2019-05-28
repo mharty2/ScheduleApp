@@ -107,10 +107,11 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 schedule = documentSnapshot.toObject(Schedule.class);
                 //doStuff
-                currentDayList = getCurrentDayList();
+                getCurrentDayList();
                 if (currentDayList == null) {
                     //toDo throw error dialogue
                 }
+                updateMap();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -123,13 +124,19 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
     //Function for handling map
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-        updateMap();
+        try {
+            mMap = googleMap;
+            updateMap();
+        } catch (Error error) {
+
+        } catch (Exception e) {
+
+        }
     }
 
     //Button functions
     void next() {
-        if (counter < getCurrentDayList().size() - 2) {
+        if (counter < currentDayList.size() - 2) {
             counter++;
             updateMap();
         }
@@ -146,25 +153,27 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
     void updateMap() {
         mMap.clear();
         loadSchedule();
-        double lat1 = parseLat(getGeocodeJson(counter));
-        double lng1 = parseLong(getGeocodeJson(counter));
-        LatLng firstLocation = new LatLng(lat1, lng1);
-        double lat2 = parseLat(getGeocodeJson(counter + 1));
-        double lng2 = parseLong(getGeocodeJson(counter + 1));
-        Log.d(TAG, "updateMap lat1, lng1, lat2, lng2: " + lat1 + " " + lng1 + " " + lat2 + " " + lng2);
-        LatLng secondLocation = new LatLng(lat2, lng2);
-        Marker marker1 = mMap.addMarker(new MarkerOptions()
-                .position(firstLocation)
-                .title(getCurrentDayList().get(counter).getLocation()));
-        Marker marker2 = mMap.addMarker(new MarkerOptions()
-                .position(secondLocation)
-                .title(getCurrentDayList().get(counter + 1).getLocation()));
-        LatLngBounds.Builder builder = new LatLngBounds.Builder();
-        builder.include(marker1.getPosition());
-        builder.include(marker2.getPosition());
-        LatLngBounds bounds = builder.build();
-        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 200);
-        mMap.animateCamera(cu);
+        if (currentDayList != null && currentDayList.size()>1) {
+            double lat1 = parseLat(getGeocodeJson(counter));
+            double lng1 = parseLong(getGeocodeJson(counter));
+            LatLng firstLocation = new LatLng(lat1, lng1);
+            double lat2 = parseLat(getGeocodeJson(counter + 1));
+            double lng2 = parseLong(getGeocodeJson(counter + 1));
+            Log.d(TAG, "updateMap lat1, lng1, lat2, lng2: " + lat1 + " " + lng1 + " " + lat2 + " " + lng2);
+            LatLng secondLocation = new LatLng(lat2, lng2);
+            Marker marker1 = mMap.addMarker(new MarkerOptions()
+                    .position(firstLocation)
+                    .title(currentDayList.get(counter).getLocation()));
+            Marker marker2 = mMap.addMarker(new MarkerOptions()
+                    .position(secondLocation)
+                    .title(currentDayList.get(counter + 1).getLocation()));
+            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+            builder.include(marker1.getPosition());
+            builder.include(marker2.getPosition());
+            LatLngBounds bounds = builder.build();
+            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 200);
+            mMap.animateCamera(cu);
+        }
     }
 
     void initSpinner() {
@@ -181,26 +190,27 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
         time.setText("");
         time.setText(parseDistanceTime(getDistanceMatrixJson()));
     }
-    
-    private List<CourseInfo> getCurrentDayList() {
-        Log.d(TAG, "getCurrentDayList: Reached");
-        Spinner spinner = (Spinner) findViewById(R.id.joshMapScreenDaySpin);
-        String currentDay = spinner.getSelectedItem().toString();
-        Log.d(TAG, "schedule: " + schedule);
-        Log.d(TAG, "currentDay: " + currentDay);
-        if (currentDay.equals("Monday")) {
-            return schedule.getMonday();
-        } else if (currentDay.equals("Tuesday")) {
-            return schedule.getTuesday();
-        } else if (currentDay.equals("Wednesday")) {
-            return schedule.getWednesday();
-        } else if (currentDay.equals("Thursday")) {
-            return schedule.getThursday();
-        } else if (currentDay.equals("Friday")) {
-            return schedule.getFriday();
+
+    private void getCurrentDayList() {
+        if (schedule != null) {
+            Log.d(TAG, "getCurrentDayList: Reached");
+            Spinner spinner = (Spinner) findViewById(R.id.joshMapScreenDaySpin);
+            String currentDay = spinner.getSelectedItem().toString();
+            Log.d(TAG, "schedule: " + schedule);
+            Log.d(TAG, "currentDay: " + currentDay);
+            if (currentDay.equals("Monday")) {
+                currentDayList = schedule.getMonday();
+            } else if (currentDay.equals("Tuesday")) {
+                currentDayList = schedule.getTuesday();
+            } else if (currentDay.equals("Wednesday")) {
+                currentDayList = schedule.getWednesday();
+            } else if (currentDay.equals("Thursday")) {
+                currentDayList = schedule.getThursday();
+            } else if (currentDay.equals("Friday")) {
+                currentDayList = schedule.getFriday();
+            }
+            Log.d(TAG, "getCurrentDayList: Returned null");
         }
-        Log.d(TAG, "getCurrentDayList: Returned null");
-        return null;
     }
 
     private String checkForSpaces(String input) {
@@ -214,8 +224,8 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
     private JsonObject getDistanceMatrixJson() {
         Log.d(TAG, "getDistanceMatrixJson: Reached");
         String urlStart = "https://maps.googleapis.com/maps/api/distancematrix/json?mode=walking";
-        String urlOrigins = "&origins=" + checkForSpaces(getCurrentDayList().get(counter).getLocation());
-        String urlDestinations = "&destinations=" + checkForSpaces(getCurrentDayList().get(counter + 1).getLocation());
+        String urlOrigins = "&origins=" + checkForSpaces(currentDayList.get(counter).getLocation());
+        String urlDestinations = "&destinations=" + checkForSpaces(currentDayList.get(counter + 1).getLocation());
         String urlEnd = "&key=" + getString(R.string.google_maps_key);
         String urlTotal = urlStart + urlOrigins + urlDestinations + urlEnd;
         //Toast.makeText(joshMapScreen.this, "Url used: " + urlTotal, Toast.LENGTH_SHORT);
@@ -228,12 +238,12 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
             e.printStackTrace();
         }
         return null;
-    }    
-    
+    }
+
     private JsonObject getGeocodeJson(int index) {
         Log.d(TAG, "getGeocodeJson: Reached");
         String urlStart = "https://maps.googleapis.com/maps/api/geocode/json?address=";
-        String urlAddress = checkForSpaces(getCurrentDayList().get(index).getLocation()) + "%20Urbana";
+        String urlAddress = checkForSpaces(currentDayList.get(index).getLocation()) + "%20Urbana";
         String urlEnd = "&key=" + getString(R.string.google_maps_key);
         String urlTotal = urlStart + urlAddress + urlEnd;
         //Toast.makeText(joshMapScreen.this, "Url used: " + urlTotal, Toast.LENGTH_SHORT);
@@ -246,7 +256,7 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
         }
         return null;
     }
-    
+
     private String parseDistanceTime(JsonObject toParse) {
         Log.d(TAG, "parseDistanceTime: Reached");
         try {
