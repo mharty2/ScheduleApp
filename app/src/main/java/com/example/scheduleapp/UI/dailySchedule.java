@@ -16,6 +16,7 @@ import com.example.scheduleapp.Adapters.dailyScheduleAdapter;
 import com.example.scheduleapp.Objects.CourseInfo;
 import com.example.scheduleapp.R;
 import com.example.scheduleapp.Objects.Schedule;
+import com.example.scheduleapp.SelectedSchedule;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -33,6 +34,7 @@ public class dailySchedule extends AppCompatActivity {
     private static final String PREF_USER_ID_TOKEN = "UserIdToken";
     private static final String PREFS_NAME = "ScheduleApp";
     private static final String KEY_SELECTED_DAY = "KEY_SELECTED_DAY";
+    private static final String TAG = "TAG";
     private SharedPreferences sharedPreferences;
     private FirebaseAuth mAuth;
     private Schedule schedule;
@@ -62,11 +64,12 @@ public class dailySchedule extends AppCompatActivity {
         txtViewDay = findViewById(R.id.daily_schedule_day);
         next = findViewById(R.id.daily_next);
         prev = findViewById(R.id.daily_previous);
-        next.setOnClickListener(v -> nextDay());
         map = findViewById(R.id.buttonDailyToMap);
-        prev.setOnClickListener(v -> previousDay());
         recyclerView = findViewById(R.id.recyclerViewDaily);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        next.setOnClickListener(v -> nextDay());
+        prev.setOnClickListener(v -> previousDay());
+        map.setOnClickListener(v-> toMap());
     }
 
     @Override
@@ -81,36 +84,13 @@ public class dailySchedule extends AppCompatActivity {
     }
 
     public void loadSchedule() {
-        //Queries all of the users schedule to find the one with name = to the one they chose in loadSchedules
-        //duplication shouldn't be a problem as if they use the same name for a schedule, it will actually overwrite it
-        //which is something we should warn them about
-        usersSchedulesCollec.whereEqualTo("name", scheduleName)
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        //Is only looping through 1 item because it only loops through items with the name of the schedule
-                        //Instead, can just go through the path with the schedule name, but keep here for reference for
-                        //when query is actually needed.
-                        for (DocumentSnapshot documentSnapshot: queryDocumentSnapshots) {
-                            schedule = documentSnapshot.toObject(Schedule.class);
-                            txtViewName.setText(schedule.getName());
-                        }
-                        currentDayList = schedule.getMonday();
-                        currentDay = "Monday";
-                        updateUI();
-                        next.setOnClickListener(v -> nextDay());
-                        prev.setOnClickListener(v -> previousDay());
-                        map.setOnClickListener(v-> toMap());
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(dailySchedule.this, "error with loading", Toast.LENGTH_LONG).show();
-                        Log.d("TAG", e.getMessage());
-                    }
-                });
+        schedule = SelectedSchedule.getInstance().getSchedule();
+        Log.d(TAG, "SelectedScheduleInstance: " + SelectedSchedule.getInstance());
+        Log.d(TAG, "loadSchedule: " + schedule);
+        currentDayList = schedule.getMonday();
+        currentDay = "Monday";
+        txtViewName.setText(schedule.getName());
+        updateUI();
     }
 
     public void nextDay() {

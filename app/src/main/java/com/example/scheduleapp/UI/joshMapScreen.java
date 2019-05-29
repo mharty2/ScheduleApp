@@ -16,6 +16,7 @@ import com.example.scheduleapp.Objects.CourseInfo;
 import com.example.scheduleapp.Objects.HttpGetRequest;
 import com.example.scheduleapp.R;
 import com.example.scheduleapp.Objects.Schedule;
+import com.example.scheduleapp.SelectedSchedule;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -76,6 +77,7 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
 
+
         initSpinner();
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.joshMapScreenFragment);
@@ -96,28 +98,8 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
         currentDay = sharedPreferences.getString(KEY_SELECTED_DAY, null);
     }
 
-    //Async task
     public void loadSchedule() {
-        usersSchedulesCollec.document(scheduleName).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                schedule = documentSnapshot.toObject(Schedule.class);
-                Log.d(TAG, "onSuccess: Schedule loaded");
-                //doStuff
-                //this call might be redundant
-                getCurrentDayList();
-                if (currentDayList == null) {
-                    //toDo throw error dialogue
-                    Log.d(TAG, "onSuccess: currentDayList is null");
-                }
-                updateMap();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.d(TAG, "onFailure: " + e.toString());
-            }
-        });
+        schedule = SelectedSchedule.getInstance().getSchedule();
     }
 
     //Function for handling map
