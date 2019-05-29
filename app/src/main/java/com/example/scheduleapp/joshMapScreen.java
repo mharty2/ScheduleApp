@@ -11,6 +11,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -106,10 +108,13 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 schedule = documentSnapshot.toObject(Schedule.class);
+                Log.d(TAG, "onSuccess: Schedule loaded");
                 //doStuff
+                //this call might be redundant
                 getCurrentDayList();
                 if (currentDayList == null) {
                     //toDo throw error dialogue
+                    Log.d(TAG, "onSuccess: currentDayList is null");
                 }
                 updateMap();
             }
@@ -152,7 +157,13 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
     //Helper functions
     void updateMap() {
         mMap.clear();
-        loadSchedule();
+        Log.d(TAG, "updateMap: schedule value: " + schedule);
+        if(schedule == null) {
+            loadSchedule();
+            return;
+        }
+        getCurrentDayList();
+        Log.d(TAG, "updateMap: currentDayList: " + currentDayList);
         if (currentDayList != null && currentDayList.size()>1) {
             double lat1 = parseLat(getGeocodeJson(counter));
             double lng1 = parseLong(getGeocodeJson(counter));
@@ -183,6 +194,20 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
                 android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (mMap != null) {
+                    Log.d(TAG, "onItemSelected: new Item Selected");
+                    updateMap();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
     }
 
     void setTime() {
