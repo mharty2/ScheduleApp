@@ -1,4 +1,4 @@
-package com.example.scheduleapp;
+package com.example.scheduleapp.UI;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -7,18 +7,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.scheduleapp.Adapters.dailyScheduleAdapter;
+import com.example.scheduleapp.Objects.CourseInfo;
+import com.example.scheduleapp.R;
+import com.example.scheduleapp.Objects.Schedule;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;

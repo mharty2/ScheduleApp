@@ -1,4 +1,4 @@
-package com.example.scheduleapp;
+package com.example.scheduleapp.UI;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,17 +9,18 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.ArrayAdapter;
-import android.widget.Adapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 
-import org.xmlpull.v1.XmlPullParserException;
+import com.example.scheduleapp.Adapters.CourseSearchAdapter;
+import com.example.scheduleapp.Objects.CourseInfo;
+import com.example.scheduleapp.Objects.HttpGetRequest;
+import com.example.scheduleapp.R;
+import com.example.scheduleapp.Objects.XMLParser;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

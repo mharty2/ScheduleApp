@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".joshMapScreen">
+    tools:context=".UI.joshMapScreen">
 
     <TextView
         android:id="@+id/joshMapScreenTime"
@@ -145,11 +145,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.498"
-        tools:context="com.example.scheduleapp.joshMapScreen" />
-
+        tools:context="com.example.scheduleapp.UI.joshMapScreen" />
+    <!---
     <Spinner
         android:id="@+id/planets_spinner"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" />
+     -->
 
 </android.support.constraint.ConstraintLayout>

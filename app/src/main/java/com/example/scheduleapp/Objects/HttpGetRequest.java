@@ -1,4 +1,4 @@
-package com.example.scheduleapp;
+package com.example.scheduleapp.Objects;
 
 import android.os.AsyncTask;
 

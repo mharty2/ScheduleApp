@@ -1,16 +1,10 @@
-package com.example.scheduleapp;
+package com.example.scheduleapp.Objects;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.util.Log;
+import com.example.scheduleapp.Objects.CourseInfo;
 
-import java.lang.reflect.Array;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.Map.Entry;
 
 public class Schedule //implements Parcelable
     {
@@ -23,10 +17,10 @@ public class Schedule //implements Parcelable
     private List<CourseInfo> friday = new ArrayList<>();
     private List<CourseInfo> classList = new ArrayList<>();
 
-    Schedule(String name) {
+    public Schedule(String name) {
         this.name = name;
     }
-    Schedule() { }
+    public Schedule() { }
     public String getName() {
         return name;
     }

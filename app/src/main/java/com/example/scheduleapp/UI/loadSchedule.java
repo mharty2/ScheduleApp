@@ -1,4 +1,4 @@
-package com.example.scheduleapp;
+package com.example.scheduleapp.UI;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,9 +8,11 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.scheduleapp.Adapters.loadScheduleAdapter;
+import com.example.scheduleapp.R;
+import com.example.scheduleapp.Objects.Schedule;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;

@@ -31,13 +31,13 @@
             android:name="org.apache.http.legacy"
             android:required="false" />
 
-        <activity android:name=".joshMapScreen" android:screenOrientation="nosensor"></activity>
-        <activity android:name=".CourseSearch" android:screenOrientation="nosensor"/>
+        <activity android:name=".UI.joshMapScreen" android:screenOrientation="nosensor"></activity>
+        <activity android:name=".UI.CourseSearch" android:screenOrientation="nosensor"/>
         <activity android:name=".mapScreen" android:screenOrientation="nosensor"/>
-        <activity android:name=".loadSchedule" android:screenOrientation="nosensor"/>
-        <activity android:name=".dailySchedule" android:screenOrientation="nosensor"/>
-        <activity android:name=".createSchedule" android:screenOrientation="nosensor"/>
-        <activity android:name=".ChooseSchedule" android:screenOrientation="nosensor">
+        <activity android:name=".UI.loadSchedule" android:screenOrientation="nosensor"/>
+        <activity android:name=".UI.dailySchedule" android:screenOrientation="nosensor"/>
+        <activity android:name=".UI.createSchedule" android:screenOrientation="nosensor"/>
+        <activity android:name=".UI.ChooseSchedule" android:screenOrientation="nosensor">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
