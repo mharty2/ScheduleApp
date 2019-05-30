@@ -109,7 +109,6 @@ public class loadSchedule extends AppCompatActivity {
                 loadRecyclerViewData();
             }
         });
-        //loadRecyclerViewData();
     }
     void loadRecyclerViewData() {
         adapter = new loadScheduleAdapter(scheduleList, loadSchedule.this);
