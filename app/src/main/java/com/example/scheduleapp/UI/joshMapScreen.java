@@ -2,7 +2,10 @@ package com.example.scheduleapp.UI;
 
 import android.Manifest;
 import android.content.SharedPreferences;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +17,7 @@ import android.widget.TextView;
 
 import com.example.scheduleapp.Objects.CourseInfo;
 import com.example.scheduleapp.Objects.HttpGetRequest;
+import com.example.scheduleapp.Objects.PolylineData;
 import com.example.scheduleapp.R;
 import com.example.scheduleapp.Objects.Schedule;
 import com.example.scheduleapp.SelectedSchedule;
@@ -26,6 +30,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -33,13 +39,21 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.maps.DirectionsApiRequest;
+import com.google.maps.GeoApiContext;
+import com.google.maps.PendingResult;
+import com.google.maps.internal.PolylineEncoding;
+import com.google.maps.model.DirectionsResult;
+import com.google.maps.model.DirectionsRoute;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallback {
+public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnPolylineClickListener {
     //Tag for debugging
     private static final String TAG = "JoshMapScreen";
 
@@ -66,6 +80,12 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
     private List<CourseInfo> currentDayList;
     private String currentDay;
     private String scheduleName;
+    private TextView txtViewClassOne;
+    private TextView txtViewClassTwo;
+    private TextView txtViewDist;
+    private GeoApiContext mGeoApiContext;
+    private ArrayList<PolylineData> mPolylinesData = new ArrayList();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,12 +96,16 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
         sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
+        txtViewClassOne = findViewById(R.id.joshMapScreenClassOne);
+        txtViewClassTwo = findViewById(R.id.joshMapScreenClassTwo);
+        txtViewDist = findViewById(R.id.textViewsJoshMapScreenDist);
 
 
         initSpinner();
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.joshMapScreenFragment);
         mapFragment.getMapAsync(this);
+        mGeoApiContext = new GeoApiContext.Builder().apiKey(getString(R.string.google_maps_key)).build();
 
         //findViewById(R.id.joshMapScreenNext).setOnClickListener(v -> next());
         //findViewById(R.id.joshMapScreenBack).setOnClickListener(v -> back());
@@ -107,6 +131,7 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
     public void onMapReady(GoogleMap googleMap) {
         try {
             mMap = googleMap;
+            mMap.setOnPolylineClickListener(this);
             updateMap();
         } catch (Error error) {
 
@@ -136,7 +161,6 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
         Log.d(TAG, "updateMap: schedule value: " + schedule);
         if(schedule == null) {
             loadSchedule();
-            return;
         }
         getCurrentDayList();
         Log.d(TAG, "updateMap: currentDayList: " + currentDayList);
@@ -160,7 +184,80 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
             LatLngBounds bounds = builder.build();
             CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 200);
             mMap.animateCamera(cu);
+            //Could set to location?
+            txtViewClassOne.setText(currentDayList.get(counter).getName());
+            txtViewClassTwo.setText(currentDayList.get(counter + 1).getName());
+
+            com.google.maps.model.LatLng destination = new com.google.maps.model.LatLng(
+                    marker2.getPosition().latitude,
+                    marker2.getPosition().longitude
+            );
+            DirectionsApiRequest directions = new DirectionsApiRequest(mGeoApiContext);
+
+            directions.alternatives(true);
+            directions.origin(
+                    new com.google.maps.model.LatLng(
+                            marker1.getPosition().latitude,
+                            marker1.getPosition().longitude
+                    )
+            );
+            //checking that request is made
+            Log.d(TAG, "calculateDirections: destination: " + destination.toString());
+            directions.destination(destination).setCallback(new PendingResult.Callback<DirectionsResult>() {
+                @Override
+                public void onResult(DirectionsResult result) {
+                    Log.d(TAG, "calculateDirections: routes: " + result.routes[0].toString());
+                    Log.d(TAG, "calculateDirections: duration: " + result.routes[0].legs[0].duration);
+                    Log.d(TAG, "calculateDirections: distance: " + result.routes[0].legs[0].distance);
+                    Log.d(TAG, "calculateDirections: geocodedWayPoints: " + result.geocodedWaypoints[0].toString());
+                    addPolylinesToMap(result);
+                }
+
+                @Override
+                public void onFailure(Throwable e) {
+                    Log.e(TAG, "calculateDirections: Failed to get directions: " + e.getMessage() );
+
+                }
+            });
         }
+    }
+
+    private void addPolylinesToMap(final DirectionsResult result){
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "run: result routes: " + result.routes.length);
+                if(mPolylinesData.size() > 0) {
+                    for (PolylineData polylineData: mPolylinesData) {
+                        polylineData.getPolyline().remove();
+                    }
+                    mPolylinesData.clear();
+                    mPolylinesData = new ArrayList<>();
+                }
+                for(DirectionsRoute route: result.routes){
+                    Log.d(TAG, "run: leg: " + route.legs[0].toString());
+                    List<com.google.maps.model.LatLng> decodedPath = PolylineEncoding.decode(route.overviewPolyline.getEncodedPath());
+
+                    List<LatLng> newDecodedPath = new ArrayList<>();
+
+                    // This loops through all the LatLng coordinates of ONE polyline.
+                    for(com.google.maps.model.LatLng latLng: decodedPath){
+
+//                        Log.d(TAG, "run: latlng: " + latLng.toString());
+
+                        newDecodedPath.add(new LatLng(
+                                latLng.lat,
+                                latLng.lng
+                        ));
+                    }
+                    Polyline polyline = mMap.addPolyline(new PolylineOptions().addAll(newDecodedPath));
+                    polyline.setColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
+                    polyline.setClickable(true);
+                    mPolylinesData.add(new PolylineData(polyline, route.legs[0]));
+
+                }
+            }
+        });
     }
 
     void initSpinner() {
@@ -311,4 +408,23 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
         }
         return 0;
     }
+
+    @Override
+    public void onPolylineClick(Polyline polyline) {
+
+        for(PolylineData polylineData: mPolylinesData){
+            Log.d(TAG, "onPolylineClick: toString: " + polylineData.toString());
+            if(polyline.getId().equals(polylineData.getPolyline().getId())){
+                polylineData.getPolyline().setColor(ContextCompat.getColor(getApplicationContext(), R.color.colorSelectedPolyline));
+                polylineData.getPolyline().setZIndex(1);
+                txtViewDist.setText("Time: " + polylineData.getLeg().duration);
+            }
+            else{
+                polylineData.getPolyline().setColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
+                polylineData.getPolyline().setZIndex(0);
+            }
+        }
+    }
+
+
 }

@@ -42,6 +42,8 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.2'
     implementation 'com.google.firebase:firebase-firestore:18.2.0'
     implementation 'com.android.support:multidex:1.0.3'
+    implementation 'com.google.maps:google-maps-services:0.9.3'
+    implementation 'org.slf4j:slf4j-simple:1.7.25'
 }
 apply plugin: 'com.google.gms.google-services'
 //com.google.gms.googleservices.GoogleServicesPlugin.config.disableVersionCheck = true
