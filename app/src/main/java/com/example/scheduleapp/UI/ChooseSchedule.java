@@ -23,18 +23,8 @@ public class ChooseSchedule extends AppCompatActivity {
         setContentView(R.layout.activity_choose_schedule);
         findViewById(R.id.CreateSchedule).setOnClickListener(v -> createSchedule());
         findViewById(R.id.LoadSchedule).setOnClickListener(v -> loadSchedule());
-        //findViewById(R.id.test).setOnClickListener(v -> joshMapScreen());
     }
-/**
-    void joshMapScreen() {
-        Intent intent = new Intent(ChooseSchedule.this, joshMapScreen.class);
-        Bundle testScheduleBundle = new Bundle();
-        testScheduleBundle.putParcelable("TestSchedule", testSchedule);
-        intent.putExtras(testScheduleBundle);
-        startActivity(intent);
-        finish();
-    }
-*/
+
     void createSchedule() {
         Intent intent = new Intent(ChooseSchedule.this, createSchedule.class);
         startActivity(intent);
