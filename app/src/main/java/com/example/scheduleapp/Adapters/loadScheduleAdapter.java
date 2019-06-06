@@ -87,6 +87,7 @@ public class loadScheduleAdapter extends RecyclerView.Adapter<loadScheduleAdapte
                                 schedule = documentSnapshot.toObject(Schedule.class);
                                 selectedSchedule = SelectedSchedule.getInstance();
                                 selectedSchedule.setSchedule(schedule);
+                                schedule.sortSchedule();
                                 Log.d("TAG", "onSuccess: loadScheduleAdapter setting Schedule to: " + schedule);
                                 toDailySchedule(v);
                             }

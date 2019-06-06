@@ -49,6 +49,7 @@ import com.google.maps.PendingResult;
 import com.google.maps.internal.PolylineEncoding;
 import com.google.maps.model.DirectionsResult;
 import com.google.maps.model.DirectionsRoute;
+import com.google.maps.model.TravelMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,8 +108,8 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
         mapFragment.getMapAsync(this);
         mGeoApiContext = new GeoApiContext.Builder().apiKey(getString(R.string.google_maps_key)).build();
 
-        //findViewById(R.id.joshMapScreenNext).setOnClickListener(v -> next());
-        //findViewById(R.id.joshMapScreenBack).setOnClickListener(v -> back());
+        findViewById(R.id.joshMapScreenNext).setOnClickListener(v -> next());
+        findViewById(R.id.joshMapScreenBack).setOnClickListener(v -> back());
     }
 
     @Override
@@ -193,6 +194,7 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
                     marker2.getPosition().longitude
             );
             DirectionsApiRequest directions = new DirectionsApiRequest(mGeoApiContext);
+            directions.mode(TravelMode.WALKING);
 
             directions.alternatives(true);
             directions.origin(
@@ -206,10 +208,6 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
             directions.destination(destination).setCallback(new PendingResult.Callback<DirectionsResult>() {
                 @Override
                 public void onResult(DirectionsResult result) {
-                    Log.d(TAG, "calculateDirections: routes: " + result.routes[0].toString());
-                    Log.d(TAG, "calculateDirections: duration: " + result.routes[0].legs[0].duration);
-                    Log.d(TAG, "calculateDirections: distance: " + result.routes[0].legs[0].distance);
-                    Log.d(TAG, "calculateDirections: geocodedWayPoints: " + result.geocodedWaypoints[0].toString());
                     addPolylinesToMap(result);
                 }
 
