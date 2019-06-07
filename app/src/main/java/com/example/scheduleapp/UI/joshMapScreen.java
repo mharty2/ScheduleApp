@@ -14,6 +14,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.scheduleapp.Objects.CourseInfo;
 import com.example.scheduleapp.Objects.HttpGetRequest;
@@ -59,9 +60,12 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
     private static final String TAG = "JoshMapScreen";
 
     //Global Variables
+
+    //TODO Do we need these? If not just delete, I'm for it
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final String COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
+
     private final String KEY_SELECTED_SCHEDULE = "KEY_SELECTED_SCHEDULE";
     private static final String PREF_USER_ID_TOKEN = "UserIdToken";
     private static final String PREFS_NAME = "ScheduleApp";
@@ -159,19 +163,17 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
     //Helper functions
     void updateMap() {
         mMap.clear();
-        Log.d(TAG, "updateMap: schedule value: " + schedule);
         if(schedule == null) {
             loadSchedule();
         }
         getCurrentDayList();
-        Log.d(TAG, "updateMap: currentDayList: " + currentDayList);
         if (currentDayList != null && currentDayList.size()>1) {
             double lat1 = parseLat(getGeocodeJson(counter));
             double lng1 = parseLong(getGeocodeJson(counter));
             LatLng firstLocation = new LatLng(lat1, lng1);
             double lat2 = parseLat(getGeocodeJson(counter + 1));
             double lng2 = parseLong(getGeocodeJson(counter + 1));
-            Log.d(TAG, "updateMap lat1, lng1, lat2, lng2: " + lat1 + " " + lng1 + " " + lat2 + " " + lng2);
+            //Log.d(TAG, "updateMap lat1, lng1, lat2, lng2: " + lat1 + " " + lng1 + " " + lat2 + " " + lng2);
             LatLng secondLocation = new LatLng(lat2, lng2);
             Marker marker1 = mMap.addMarker(new MarkerOptions()
                     .position(firstLocation)
@@ -281,6 +283,7 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
         });
     }
 
+    //TODO Do we need this?
     void setTime() {
         TextView time = findViewById(R.id.joshMapScreenTime);
         time.setText("");
@@ -309,19 +312,29 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
         }
     }
 
-    private String checkForSpaces(String input) {
+    private String checkForSpacesAndEtc(String input) {
+        String toReturn = input;
         if (input.contains(" ")) {
-            input = input.replace(" ", "%20");
+            toReturn = toReturn.replace(" ", "%20");
         }
-        return input;
+        if (toReturn.contains("&")) {
+            toReturn = toReturn.replace("&", "and");
+        }
+        if (toReturn.contains("Bldg")) {
+            toReturn = toReturn.replace("Bldg", "building");
+        }
+        if (toReturn.contains("Eng")) {
+            toReturn = toReturn.replace("Eng","engineering");
+        }
+        return toReturn;
     }
 
     //Parsing functions
     private JsonObject getDistanceMatrixJson() {
         Log.d(TAG, "getDistanceMatrixJson: Reached");
         String urlStart = "https://maps.googleapis.com/maps/api/distancematrix/json?mode=walking";
-        String urlOrigins = "&origins=" + checkForSpaces(currentDayList.get(counter).getLocation());
-        String urlDestinations = "&destinations=" + checkForSpaces(currentDayList.get(counter + 1).getLocation());
+        String urlOrigins = "&origins=" + checkForSpacesAndEtc(currentDayList.get(counter).getLocation());
+        String urlDestinations = "&destinations=" + checkForSpacesAndEtc(currentDayList.get(counter + 1).getLocation());
         String urlEnd = "&key=" + getString(R.string.google_maps_key);
         String urlTotal = urlStart + urlOrigins + urlDestinations + urlEnd;
         //Toast.makeText(joshMapScreen.this, "Url used: " + urlTotal, Toast.LENGTH_SHORT);
@@ -339,10 +352,10 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
     private JsonObject getGeocodeJson(int index) {
         Log.d(TAG, "getGeocodeJson: Reached");
         String urlStart = "https://maps.googleapis.com/maps/api/geocode/json?address=";
-        String urlAddress = checkForSpaces(currentDayList.get(index).getLocation()) + "%20Urbana";
+        String urlAddress = checkForSpacesAndEtc(currentDayList.get(index).getLocation() + " University of Illinois at Urbana Champaign");
         String urlEnd = "&key=" + getString(R.string.google_maps_key);
         String urlTotal = urlStart + urlAddress + urlEnd;
-        //Toast.makeText(joshMapScreen.this, "Url used: " + urlTotal, Toast.LENGTH_SHORT);
+        Toast.makeText(joshMapScreen.this, "Url used: " + urlTotal, Toast.LENGTH_SHORT);
         Log.d(TAG, "getGeocodeJson total url used: " + urlTotal);
         HttpGetRequest getRequest = new HttpGetRequest();
         try {
