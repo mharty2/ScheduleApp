@@ -11,12 +11,17 @@ import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.scheduleapp.Adapters.CourseSearchAdapter;
 import com.example.scheduleapp.Objects.CourseInfo;
 import com.example.scheduleapp.Objects.HttpGetRequest;
 import com.example.scheduleapp.R;
 import com.example.scheduleapp.Objects.XMLParser;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -33,13 +38,12 @@ public class CourseSearch extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private List<CourseInfo> listItems;
+    private JsonParser parser = new JsonParser();
 
     private Map<String, String> courseSubjToSubjCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d("onCreate","onCreate started");
-
         courseSubjToSubjCode = createMap();
 
         super.onCreate(savedInstanceState);
@@ -56,8 +60,6 @@ public class CourseSearch extends AppCompatActivity {
         String[] subjects = getResources().getStringArray(R.array.courseSubjectAutoComplete);
         ArrayAdapter<String> adapter4 = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, subjects);
         courseSubject.setAdapter(adapter4);
-
-        Log.d("onCreate","onCreate ended");
     }
 
     private Map<String, String> createMap() {
@@ -314,14 +316,6 @@ public class CourseSearch extends AppCompatActivity {
             AlertDialog alert = builder.create();
             alert.show();
         }
-        /**
-        catch (XmlPullParserException e) {
-            e.printStackTrace();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-         */
     }
 
     void cancel() {
@@ -330,9 +324,65 @@ public class CourseSearch extends AppCompatActivity {
         finish();
     }
 
-    void addCourse() {
-        Intent intent = new Intent(CourseSearch.this, createSchedule.class);
-        startActivity(intent);
-        finish();
+    private JsonObject getGeocodeJson(CourseInfo course) {
+        String urlStart = "https://maps.googleapis.com/maps/api/geocode/json?address=";
+        String urlAddress = checkForSpacesAndEtc(course.getLocation() + " University of Illinois at Urbana Champaign");
+        String urlEnd = "&key=" + getString(R.string.google_maps_key);
+        String urlTotal = urlStart + urlAddress + urlEnd;
+        HttpGetRequest getRequest = new HttpGetRequest();
+        try {
+            return parser.parse(getRequest.execute(urlTotal).get()).getAsJsonObject();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private String checkForSpacesAndEtc(String input) {
+        String toReturn = input;
+        if (input.contains(" ")) {
+            toReturn = toReturn.replace(" ", "%20");
+        }
+        if (toReturn.contains("&")) {
+            toReturn = toReturn.replace("&", "and");
+        }
+        if (toReturn.contains("Bldg")) {
+            toReturn = toReturn.replace("Bldg", "building");
+        }
+        if (toReturn.contains("Eng")) {
+            toReturn = toReturn.replace("Eng","engineering");
+        }
+        return toReturn;
+    }
+
+    private double parseLat(JsonObject toParse) {
+        try {
+            JsonArray results = toParse.getAsJsonArray("results");
+            JsonObject object = results.get(0).getAsJsonObject();
+            JsonObject geometry = object.getAsJsonObject("geometry");
+            JsonObject location = geometry.get("location").getAsJsonObject();
+            return location.get("lat").getAsDouble();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    private double parseLong(JsonObject toParse) {
+        try {
+            JsonArray results = toParse.getAsJsonArray("results");
+            JsonObject object = results.get(0).getAsJsonObject();
+            JsonObject geometry = object.getAsJsonObject("geometry");
+            JsonObject location = geometry.get("location").getAsJsonObject();
+            return location.get("lng").getAsDouble();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    private LatLng convertToLatLng(CourseInfo input) {
+        LatLng toReturn = new LatLng(parseLat(getGeocodeJson(input)), parseLong(getGeocodeJson(input)));
+        return toReturn;
     }
 }

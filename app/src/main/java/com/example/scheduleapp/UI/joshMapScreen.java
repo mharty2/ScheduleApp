@@ -283,12 +283,6 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
         });
     }
 
-    //TODO Do we need this?
-    void setTime() {
-        TextView time = findViewById(R.id.joshMapScreenTime);
-        time.setText("");
-        time.setText(parseDistanceTime(getDistanceMatrixJson()));
-    }
 
     private void getCurrentDayList() {
         if (schedule != null) {
@@ -366,6 +360,7 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
         return null;
     }
 
+    //toDo safe delete?
     private String parseDistanceTime(JsonObject toParse) {
         Log.d(TAG, "parseDistanceTime: Reached");
         try {
