@@ -2,6 +2,8 @@ package com.example.scheduleapp.UI;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,6 +21,17 @@ import com.example.scheduleapp.Objects.HttpGetRequest;
 import com.example.scheduleapp.R;
 import com.example.scheduleapp.Objects.XMLParser;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -31,6 +44,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
+import javax.annotation.Nullable;
+
 public class CourseSearch extends AppCompatActivity {
 
     private List<XMLParser.SpecificClassData> internalClassList;
@@ -39,6 +54,20 @@ public class CourseSearch extends AppCompatActivity {
     private RecyclerView.Adapter adapter;
     private List<CourseInfo> listItems;
     private JsonParser parser = new JsonParser();
+    private HashMap<String, LatLng> locationMap;
+    private FirebaseAuth auth;
+    private FirebaseFirestore db;
+    private SharedPreferences sharedPreferences;
+    private static final String PREF_USER_ID_TOKEN = "UserIdToken";
+    private static final String PREFS_NAME = "ScheduleApp";
+    private static final String KEY_LOCATION_MAP = "Schedule Locations";
+    private CollectionReference sharedInfo;
+    private DocumentReference sharedMap;
+    //walking speed in m/s
+    private double walkingSpeed = 1.4;
+    //arbitrary multiplier to compensate for straight line calculations
+    private double timeMultiplier = 1.2;
+    private String distInfo;
 
     private Map<String, String> courseSubjToSubjCode;
 
@@ -54,6 +83,22 @@ public class CourseSearch extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         listItems = new ArrayList<>();
+        auth = FirebaseAuth.getInstance();
+        sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        auth.signInWithCustomToken(sharedPreferences.getString(PREF_USER_ID_TOKEN, ""));
+        db = FirebaseFirestore.getInstance();
+        //contains a single hashmap which pairs a location to a LatLng
+        sharedInfo = db.collection("SharedInfo");
+        sharedMap = sharedInfo.document(KEY_LOCATION_MAP);
+        sharedMap.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                DocumentSnapshot documentSnapshot = task.getResult();
+                if (documentSnapshot.exists()) {
+                    locationMap = documentSnapshot.toObject(HashMap.class);
+                }
+            }
+        });
 
         //Assigning stuff for autocomplete for subjects
         AutoCompleteTextView courseSubject = (AutoCompleteTextView) findViewById(R.id.courseSearchSubject);
@@ -384,5 +429,43 @@ public class CourseSearch extends AppCompatActivity {
     private LatLng convertToLatLng(CourseInfo input) {
         LatLng toReturn = new LatLng(parseLat(getGeocodeJson(input)), parseLong(getGeocodeJson(input)));
         return toReturn;
+    }
+
+    private double approxTime(CourseInfo a, CourseInfo b) {
+        LatLng coor1 = locationMap.get(a.getLocation());
+        LatLng coor2 = locationMap.get(b.getLocation());
+        if (coor1 == null || coor2 == null) {
+            if (coor1 == null) {
+                coor1 = convertToLatLng(a);
+                locationMap.put(a.getLocation(), coor1);
+            }
+            if (coor2 == null) {
+                coor2 = convertToLatLng(b);
+                locationMap.put(b.getLocation(), coor2);
+            }
+            sharedMap.set(locationMap);
+        }
+        double dist = haversineDist(coor1, coor2);
+        double time = (dist/walkingSpeed)*timeMultiplier;
+        int minutes = (int) time/60;
+        int seconds = (int) (time-minutes*60);
+        distInfo = "Duration: " + minutes + " minute(s) " + seconds + " seconds";
+        return minutes;
+    }
+
+    private double haversineDist(LatLng a, LatLng b) {
+        double lat1Rad = Math.toRadians(a.latitude);
+        double lat2Rad = Math.toRadians(b.latitude);
+        double latDist = Math.toRadians(b.latitude - a.latitude);
+        double longDist = Math.toRadians(b.longitude - a.longitude);
+        double x = Math.sin(latDist/2) * Math.sin(latDist/2) + Math.cos(lat1Rad) * Math.cos(lat2Rad)
+                + Math.sin(longDist/2) * Math.sin(longDist/2);
+        double y = 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1-x));
+        double radius = 6371000;
+        return  x * radius;
+    }
+
+    public void setWalkingSpeed(double input) {
+        walkingSpeed = input;
     }
 }

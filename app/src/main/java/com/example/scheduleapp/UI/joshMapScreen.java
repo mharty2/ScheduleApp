@@ -60,12 +60,6 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
     private static final String TAG = "JoshMapScreen";
 
     //Global Variables
-
-    //TODO Do we need these? If not just delete, I'm for it
-    private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
-    private static final String COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
-
     private final String KEY_SELECTED_SCHEDULE = "KEY_SELECTED_SCHEDULE";
     private static final String PREF_USER_ID_TOKEN = "UserIdToken";
     private static final String PREFS_NAME = "ScheduleApp";
