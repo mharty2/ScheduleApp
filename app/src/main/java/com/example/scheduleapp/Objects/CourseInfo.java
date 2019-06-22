@@ -3,7 +3,10 @@ package com.example.scheduleapp.Objects;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 
 /** Class for holding all data for google-services.json single course */
 public class CourseInfo implements Parcelable {
@@ -172,5 +175,32 @@ public class CourseInfo implements Parcelable {
 
     public void setCrn(String crn) {
         this.crn = crn;
+    }
+    //should return at most 2 classes
+    public HashSet<CourseInfo> getNearestClasses(ArrayList<CourseInfo> courseList) {
+        if (courseList == null || courseList.size() == 0) {
+            return null;
+        }
+        if (courseList.size() <= 2) {
+            HashSet<CourseInfo> set = new HashSet<>();
+            set.addAll(courseList);
+            return set;
+        }
+        HashSet<CourseInfo> toReturn = new HashSet<>();
+        Time thisTime = new Time(time);
+        Time otherTime = new Time(courseList.get(0).getTime());
+        double minTimeBetween = thisTime.getTimeBetween(otherTime);
+        toReturn.add(courseList.get(0));
+        for (CourseInfo course : courseList) {
+            otherTime = new Time(course.getTime());
+            if (minTimeBetween > thisTime.getTimeBetween(otherTime)) {
+                minTimeBetween = thisTime.getTimeBetween((otherTime));
+                toReturn.clear();
+                toReturn.add(course);
+            } else if (Math.abs(minTimeBetween - thisTime.getTimeBetween(otherTime)) < 1) {
+                toReturn.add(course);
+            }
+        }
+        return toReturn;
     }
 }
