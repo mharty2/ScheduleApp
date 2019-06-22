@@ -100,6 +100,10 @@ public class CourseSearch extends AppCompatActivity {
                 DocumentSnapshot documentSnapshot = task.getResult();
                 if (documentSnapshot.exists()) {
                     locationMap = documentSnapshot.toObject(HashMap.class);
+                    Bundle extras = new Bundle();
+                    extras.putSerializable("HashMap",locationMap);
+                    Intent intent = new Intent();
+                    intent.putExtras(extras);
                 }
             }
         });

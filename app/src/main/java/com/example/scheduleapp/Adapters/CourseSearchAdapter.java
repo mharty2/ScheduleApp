@@ -76,15 +76,10 @@ public class CourseSearchAdapter extends RecyclerView.Adapter<CourseSearchAdapte
         //contains a single hashmap which pairs a location to a LatLng
         sharedInfo = db.collection("SharedInfo");
         sharedMap = sharedInfo.document(KEY_LOCATION_MAP);
-        sharedMap.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                DocumentSnapshot documentSnapshot = task.getResult();
-                if (documentSnapshot.exists()) {
-                    locationMap = documentSnapshot.toObject(HashMap.class);
-                }
-            }
-        });
+        Bundle bundle = mActivity.getIntent().getExtras();
+        if(bundle != null) {
+            locationMap =(HashMap) bundle.getSerializable("HashMap");
+        }
     }
 
     @Override
@@ -109,23 +104,26 @@ public class CourseSearchAdapter extends RecyclerView.Adapter<CourseSearchAdapte
         } else {
             ArrayList<CourseInfo> nearestClasses = item.getNearestClasses(scheduleInProgress.getClassList());
             double maxTime;
-            switch (nearestClasses.size()) {
-                case 2:
-                    double a = approxTime(item, nearestClasses.get(0));
-                    double b = approxTime(item, nearestClasses.get(1));
-                    maxTime = Math.max(a, b);
-                    break;
-                case 1:
-                    maxTime = approxTime(item, nearestClasses.get(0));
-                default:
-                    maxTime = 30;
-            }
-            if (maxTime >= 12) {
-                viewHolder.linearLayout.setBackgroundColor(Color.parseColor("#FF0000"));
-            } else if (maxTime >= 8) {
-                viewHolder.linearLayout.setBackgroundColor(Color.parseColor("#FFFF00"));
-            } else {
-                viewHolder.linearLayout.setBackgroundColor(Color.parseColor("#0000FF"));
+            if (nearestClasses != null) {
+                switch (nearestClasses.size()) {
+                    case 2:
+                        double a = approxTime(item, nearestClasses.get(0));
+                        double b = approxTime(item, nearestClasses.get(1));
+                        maxTime = Math.max(a, b);
+                        break;
+                    case 1:
+                        maxTime = approxTime(item, nearestClasses.get(0));
+                        break;
+                    default:
+                        maxTime = 30;
+                }
+                if (maxTime >= 12) {
+                    viewHolder.linearLayout.setBackgroundColor(Color.parseColor("#FF0000"));
+                } else if (maxTime >= 8) {
+                    viewHolder.linearLayout.setBackgroundColor(Color.parseColor("#FFFF00"));
+                } else {
+                    viewHolder.linearLayout.setBackgroundColor(Color.parseColor("#0000FF"));
+                }
             }
         }
 
@@ -262,6 +260,14 @@ public class CourseSearchAdapter extends RecyclerView.Adapter<CourseSearchAdapte
     }
 
     public double approxTime(CourseInfo a, CourseInfo b) {
+        if (locationMap == null) {
+            Bundle bundle = mActivity.getIntent().getExtras();
+            if(bundle != null) {
+                locationMap = (HashMap<String, LatLng>) bundle.getSerializable("HashMap");
+            } else {
+                locationMap = new HashMap<>();
+            }
+        }
         LatLng coor1 = locationMap.get(a.getLocation());
         LatLng coor2 = locationMap.get(b.getLocation());
         if (coor1 == null || coor2 == null) {

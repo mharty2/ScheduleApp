@@ -26,8 +26,8 @@ public class Time {
         if (two.contains("AM") && doub2 == 12) {
             doub2 = 0;
         }
-        doub1 +=  (double) (Integer.parseInt(arr1[1].trim()))/60;
-        doub2 += (double) (Integer.parseInt(arr2[1].trim()))/60;
+        doub1 +=  (double) (Integer.parseInt(arr1[1].split(" ")[0].trim()))/60;
+        doub2 += (double) (Integer.parseInt(arr2[1].split(" ")[0].trim()))/60;
         start = doub1;
         end = doub2;
         duration = Math.abs(start - end);
