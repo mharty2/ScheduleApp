@@ -20,6 +20,7 @@ import com.example.scheduleapp.Adapters.CreateScheduleAdapter;
 import com.example.scheduleapp.Objects.CourseInfo;
 import com.example.scheduleapp.R;
 import com.example.scheduleapp.Objects.Schedule;
+import com.example.scheduleapp.SelectedSchedule;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -39,7 +40,7 @@ public class createSchedule extends AppCompatActivity {
     private String name;
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
-    private List<CourseInfo> schedule;
+    private Schedule schedule;
     private CourseInfo toAdd;
     private static final String PREFS_NAME = "ScheduleApp";
     private static final String PREF_USER_ID_TOKEN = "UserIdToken";
@@ -54,7 +55,8 @@ public class createSchedule extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_schedule);
-        schedule = new ArrayList<CourseInfo>();
+        schedule = new Schedule();
+        SelectedSchedule.getInstance().setSchedule(schedule);
         recyclerView = findViewById(R.id.createScheduleRecycler);
         findViewById(R.id.createScheduleCancel).setOnClickListener(v -> cancel());
         findViewById(R.id.create).setOnClickListener(v -> addCourse());
@@ -63,7 +65,7 @@ public class createSchedule extends AppCompatActivity {
         sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new CreateScheduleAdapter(schedule, this);
+        adapter = new CreateScheduleAdapter(schedule.getClassList(), this);
         recyclerView.setAdapter(adapter);
         try {
             mAuth = FirebaseAuth.getInstance();
@@ -87,8 +89,6 @@ public class createSchedule extends AppCompatActivity {
                                 Toast.makeText(createSchedule.this, "Authentication failed.",
                                         Toast.LENGTH_SHORT).show();
                             }
-
-                            // ...
                         }
                     });
         }
@@ -105,21 +105,13 @@ public class createSchedule extends AppCompatActivity {
 
     private void loadRecyclerViewData() {
         if (toAdd != null) {
-            schedule.add(toAdd);
+            schedule.addCourse(toAdd);
         }
         checkForDuplicates();
-        Log.d("schedule check","stored schedule: " + schedule);
-        Log.d("schedule check pt.2","stored schedule size: " + schedule.size());
-        adapter = new CreateScheduleAdapter(schedule, createSchedule.this);
+        adapter = new CreateScheduleAdapter(schedule.getClassList(), createSchedule.this);
         recyclerView.setAdapter(adapter);
     }
 
-    /**
-     @Override
-     public void onStart() {
-     super.onStart();
-     }
-     */
     void cancel() {
         Intent intent = new Intent(createSchedule.this, ChooseSchedule.class);
         startActivity(intent);
@@ -132,11 +124,13 @@ public class createSchedule extends AppCompatActivity {
     }
 
     void checkForDuplicates() {
-        if (schedule != null) {
+        if (schedule != null && schedule.getClassList() != null) {
             Set<CourseInfo> set = new LinkedHashSet<>();
-            set.addAll(schedule);
-            schedule.clear();
-            schedule.addAll(set);
+            set.addAll(schedule.getClassList());
+            ArrayList<CourseInfo> a = new ArrayList();
+            a.addAll(set);
+            schedule.setClassList(a);
+
         }
     }
 
@@ -173,21 +167,18 @@ public class createSchedule extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 name = input.getText().toString();
-                if(name == null || name.equals("")) {
-                    //need to figure out how to relay this to the user because it happens too fast for them to see atm.
+                if(name.equals("")) {
+                    //Todo need to figure out how to relay this to the user because it happens too fast for them to see atm.
                     input.setHint("Schedule must have a name!");
                     return;
                 }
                 //Is the empty constructor necessary for parcelable? I changed it to correspond with the other constructor
                 //Even then, we might not need the parcelable part for the schedule once we have firebase working
-                Schedule scheduleClasses = new Schedule(name);
-                for (CourseInfo current : schedule) {
-                    scheduleClasses.addCourse(current);
-                }
+                schedule.setName(name);
 
                 //Map<String, Schedule> scheduleMap = new HashMap<>();
                 //scheduleMap.put(scheduleClasses.getName(), scheduleClasses);
-                usersSchedulesCollec.document(scheduleClasses.getName()).set(scheduleClasses)
+                usersSchedulesCollec.document(schedule.getName()).set(schedule)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -201,16 +192,6 @@ public class createSchedule extends AppCompatActivity {
                         Log.d("tag", e.toString());
                     }
                 });
-
-                /**
-                 *
-                //For demo purposes right?
-                Intent intent = new Intent(createSchedule.this, joshMapScreen.class);
-                Bundle scheduleBundle = new Bundle();
-                scheduleBundle.putParcelable("schedule", scheduleClasses);
-                startActivity(intent);
-                finish();
-                 */
 
                 Intent intent = new Intent(createSchedule.this, ChooseSchedule.class);
                 startActivity(intent);

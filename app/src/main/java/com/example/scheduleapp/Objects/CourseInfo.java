@@ -176,15 +176,18 @@ public class CourseInfo implements Parcelable {
     public void setCrn(String crn) {
         this.crn = crn;
     }
+
     //should return at most 2 classes
-    public HashSet<CourseInfo> getNearestClasses(ArrayList<CourseInfo> courseList) {
+    public ArrayList<CourseInfo> getNearestClasses(ArrayList<CourseInfo> courseList) {
         if (courseList == null || courseList.size() == 0) {
             return null;
         }
         if (courseList.size() <= 2) {
             HashSet<CourseInfo> set = new HashSet<>();
             set.addAll(courseList);
-            return set;
+            ArrayList<CourseInfo> toReturn = new ArrayList<>();
+            toReturn.addAll(set);
+            return toReturn;
         }
         HashSet<CourseInfo> toReturn = new HashSet<>();
         Time thisTime = new Time(time);
@@ -201,6 +204,19 @@ public class CourseInfo implements Parcelable {
                 toReturn.add(course);
             }
         }
-        return toReturn;
+        ArrayList<CourseInfo> list = new ArrayList<>();
+        list.addAll(toReturn);
+        return list;
+    }
+
+    public boolean checkForInterference(ArrayList<CourseInfo> list) {
+        Time thisTime = new Time(getTime());
+        for (CourseInfo course : list) {
+            Time otherTime = new Time(course.getTime());
+            if (thisTime.checkTimeInterference(otherTime)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

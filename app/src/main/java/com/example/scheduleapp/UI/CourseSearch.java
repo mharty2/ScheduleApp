@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
@@ -18,8 +19,10 @@ import android.widget.Toast;
 import com.example.scheduleapp.Adapters.CourseSearchAdapter;
 import com.example.scheduleapp.Objects.CourseInfo;
 import com.example.scheduleapp.Objects.HttpGetRequest;
+import com.example.scheduleapp.Objects.Schedule;
 import com.example.scheduleapp.R;
 import com.example.scheduleapp.Objects.XMLParser;
+import com.example.scheduleapp.SelectedSchedule;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -63,6 +66,7 @@ public class CourseSearch extends AppCompatActivity {
     private static final String KEY_LOCATION_MAP = "Schedule Locations";
     private CollectionReference sharedInfo;
     private DocumentReference sharedMap;
+    private Schedule scheduleInProgress;
     //walking speed in m/s
     private double walkingSpeed = 1.4;
     //arbitrary multiplier to compensate for straight line calculations
@@ -74,7 +78,6 @@ public class CourseSearch extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         courseSubjToSubjCode = createMap();
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_course_search);
         findViewById(R.id.courseSearchCancel).setOnClickListener(v -> cancel());
@@ -83,6 +86,7 @@ public class CourseSearch extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         listItems = new ArrayList<>();
+        scheduleInProgress = SelectedSchedule.getInstance().getSchedule();
         auth = FirebaseAuth.getInstance();
         sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         auth.signInWithCustomToken(sharedPreferences.getString(PREF_USER_ID_TOKEN, ""));
@@ -340,13 +344,14 @@ public class CourseSearch extends AppCompatActivity {
         getXmlAsString();
         Log.d("parseXML", "xmlAsStringAfter: " + xmlAsString);
         InputStream stream = new ByteArrayInputStream(xmlAsString.getBytes(Charset.forName("UTF-8")));
-        XMLParser parser = new XMLParser();
+        XMLParser xmlParser = new XMLParser();
 
         try {
-            internalClassList = parser.parseSpecificClass(stream);
+            internalClassList = xmlParser.parseSpecificClass(stream);
             //previously loadRecyclerView was in a finally{} statement, which caused an issue with internalClassList as it was null
             loadRecyclerViewData();
         } catch (Exception e) {
+            Log.d("tag", "Error Message: " + e.getMessage());
             listItems.clear();
             adapter = new CourseSearchAdapter(listItems, CourseSearch.this);
             recyclerView.setAdapter(adapter);
@@ -367,102 +372,6 @@ public class CourseSearch extends AppCompatActivity {
         Intent intent = new Intent(CourseSearch.this, createSchedule.class);
         startActivity(intent);
         finish();
-    }
-
-    private JsonObject getGeocodeJson(CourseInfo course) {
-        String urlStart = "https://maps.googleapis.com/maps/api/geocode/json?address=";
-        String urlAddress = checkForSpacesAndEtc(course.getLocation() + " University of Illinois at Urbana Champaign");
-        String urlEnd = "&key=" + getString(R.string.google_maps_key);
-        String urlTotal = urlStart + urlAddress + urlEnd;
-        HttpGetRequest getRequest = new HttpGetRequest();
-        try {
-            return parser.parse(getRequest.execute(urlTotal).get()).getAsJsonObject();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    private String checkForSpacesAndEtc(String input) {
-        String toReturn = input;
-        if (input.contains(" ")) {
-            toReturn = toReturn.replace(" ", "%20");
-        }
-        if (toReturn.contains("&")) {
-            toReturn = toReturn.replace("&", "and");
-        }
-        if (toReturn.contains("Bldg")) {
-            toReturn = toReturn.replace("Bldg", "building");
-        }
-        if (toReturn.contains("Eng")) {
-            toReturn = toReturn.replace("Eng","engineering");
-        }
-        return toReturn;
-    }
-
-    private double parseLat(JsonObject toParse) {
-        try {
-            JsonArray results = toParse.getAsJsonArray("results");
-            JsonObject object = results.get(0).getAsJsonObject();
-            JsonObject geometry = object.getAsJsonObject("geometry");
-            JsonObject location = geometry.get("location").getAsJsonObject();
-            return location.get("lat").getAsDouble();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
-
-    private double parseLong(JsonObject toParse) {
-        try {
-            JsonArray results = toParse.getAsJsonArray("results");
-            JsonObject object = results.get(0).getAsJsonObject();
-            JsonObject geometry = object.getAsJsonObject("geometry");
-            JsonObject location = geometry.get("location").getAsJsonObject();
-            return location.get("lng").getAsDouble();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
-
-    private LatLng convertToLatLng(CourseInfo input) {
-        LatLng toReturn = new LatLng(parseLat(getGeocodeJson(input)), parseLong(getGeocodeJson(input)));
-        return toReturn;
-    }
-
-    private double approxTime(CourseInfo a, CourseInfo b) {
-        LatLng coor1 = locationMap.get(a.getLocation());
-        LatLng coor2 = locationMap.get(b.getLocation());
-        if (coor1 == null || coor2 == null) {
-            if (coor1 == null) {
-                coor1 = convertToLatLng(a);
-                locationMap.put(a.getLocation(), coor1);
-            }
-            if (coor2 == null) {
-                coor2 = convertToLatLng(b);
-                locationMap.put(b.getLocation(), coor2);
-            }
-            sharedMap.set(locationMap);
-        }
-        double dist = haversineDist(coor1, coor2);
-        double time = (dist/walkingSpeed)*timeMultiplier;
-        int minutes = (int) time/60;
-        int seconds = (int) (time-minutes*60);
-        distInfo = "Duration: " + minutes + " minute(s) " + seconds + " seconds";
-        return minutes;
-    }
-
-    private double haversineDist(LatLng a, LatLng b) {
-        double lat1Rad = Math.toRadians(a.latitude);
-        double lat2Rad = Math.toRadians(b.latitude);
-        double latDist = Math.toRadians(b.latitude - a.latitude);
-        double longDist = Math.toRadians(b.longitude - a.longitude);
-        double x = Math.sin(latDist/2) * Math.sin(latDist/2) + Math.cos(lat1Rad) * Math.cos(lat2Rad)
-                + Math.sin(longDist/2) * Math.sin(longDist/2);
-        double y = 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1-x));
-        double radius = 6371000;
-        return  x * radius;
     }
 
     public void setWalkingSpeed(double input) {

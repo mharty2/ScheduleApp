@@ -15,7 +15,7 @@ public class Schedule
     private List<CourseInfo> wednesday = new ArrayList<>();
     private List<CourseInfo> thursday = new ArrayList<>();
     private List<CourseInfo> friday = new ArrayList<>();
-    private List<CourseInfo> classList = new ArrayList<>();
+    private ArrayList<CourseInfo> classList = new ArrayList<>();
 
     public Schedule(String name) {
         this.name = name;
@@ -94,15 +94,13 @@ public class Schedule
 
     public void sortByTime(List<CourseInfo> list) {
         Collections.sort(list, (CourseInfo a, CourseInfo b) -> a.compareTimes(b));
-        //todo make it right the first time lol
-        //Collections.reverse(list);
     }
 
-    public List<CourseInfo> getClassList() {
+    public ArrayList<CourseInfo> getClassList() {
         return classList;
     }
 
-    public void setClassList(List<CourseInfo> classList) {
+    public void setClassList(ArrayList<CourseInfo> classList) {
         this.classList = classList;
     }
 
