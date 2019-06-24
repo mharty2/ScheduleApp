@@ -165,6 +165,10 @@ public class CourseInfo implements Parcelable {
         this.days = days;
     }
 
+    public char[] getDaysAsChars() {
+        return this.days.toCharArray();
+    }
+
     public void setLocation(String location) {
         this.location = location;
     }
@@ -177,35 +181,45 @@ public class CourseInfo implements Parcelable {
         this.crn = crn;
     }
 
-    //should return at most 2 classes
+    //should return at most 2 classes per day
     public ArrayList<CourseInfo> getNearestClasses(ArrayList<CourseInfo> courseList) {
         if (courseList == null || courseList.size() == 0) {
-            return null;
+            return new ArrayList<>();
         }
-        if (courseList.size() <= 2) {
-            HashSet<CourseInfo> set = new HashSet<>();
-            set.addAll(courseList);
-            ArrayList<CourseInfo> toReturn = new ArrayList<>();
-            toReturn.addAll(set);
-            return toReturn;
+        if (courseList.size() < 2) {
+            for (char c : getDaysAsChars()) {
+                if (courseList.get(0).getDays().indexOf(c) > -1) {
+                    HashSet<CourseInfo> set = new HashSet<>();
+                    set.addAll(courseList);
+                    ArrayList<CourseInfo> toReturn = new ArrayList<>();
+                    toReturn.addAll(set);
+                    return toReturn;
+                }
+            }
         }
         HashSet<CourseInfo> toReturn = new HashSet<>();
+        HashSet<CourseInfo> temp = new HashSet<>();
         Time thisTime = new Time(time);
         Time otherTime = new Time(courseList.get(0).getTime());
         double minTimeBetween = thisTime.getTimeBetween(otherTime);
         toReturn.add(courseList.get(0));
         for (CourseInfo course : courseList) {
-            otherTime = new Time(course.getTime());
-            if (minTimeBetween > thisTime.getTimeBetween(otherTime)) {
-                minTimeBetween = thisTime.getTimeBetween((otherTime));
-                toReturn.clear();
-                toReturn.add(course);
-            } else if (Math.abs(minTimeBetween - thisTime.getTimeBetween(otherTime)) < 1) {
-                toReturn.add(course);
+            for (char c : getDaysAsChars()) {
+                if (course.getDays().indexOf(c) > -1) {
+                    otherTime = new Time(course.getTime());
+                    if (minTimeBetween > thisTime.getTimeBetween(otherTime)) {
+                        minTimeBetween = thisTime.getTimeBetween((otherTime));
+                        toReturn.clear();
+                        toReturn.add(course);
+                    } else if (Math.abs(minTimeBetween - thisTime.getTimeBetween(otherTime)) < 1) {
+                        toReturn.add(course);
+                    }
+                }
             }
+            temp.addAll(toReturn);
         }
         ArrayList<CourseInfo> list = new ArrayList<>();
-        list.addAll(toReturn);
+        list.addAll(temp);
         return list;
     }
 

@@ -106,16 +106,19 @@ public class CourseSearchAdapter extends RecyclerView.Adapter<CourseSearchAdapte
             double maxTime;
             if (nearestClasses != null) {
                 switch (nearestClasses.size()) {
-                    case 2:
-                        double a = approxTime(item, nearestClasses.get(0));
-                        double b = approxTime(item, nearestClasses.get(1));
-                        maxTime = Math.max(a, b);
+                    case 0:
+                        maxTime = 30;
                         break;
                     case 1:
                         maxTime = approxTime(item, nearestClasses.get(0));
                         break;
                     default:
-                        maxTime = 30;
+                        maxTime = 0;
+                        for (CourseInfo course : nearestClasses) {
+                            if (approxTime(item, course) > maxTime) {
+                                maxTime = approxTime(item, course);
+                            }
+                        }
                 }
                 Log.d(TAG, "onBindViewHolder: maxTime value:" + maxTime);
                 if (maxTime >= 12) {
@@ -208,6 +211,7 @@ public class CourseSearchAdapter extends RecyclerView.Adapter<CourseSearchAdapte
             return parser.parse(getRequest.execute(urlTotal).get()).getAsJsonObject();
         } catch (Exception e) {
             e.printStackTrace();
+            Log.d(TAG, "getGeocodeJson: could not get location for:" + course.getLocation());
         }
         return null;
     }
