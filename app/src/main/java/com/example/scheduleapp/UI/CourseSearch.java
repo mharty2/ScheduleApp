@@ -27,6 +27,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -94,19 +95,6 @@ public class CourseSearch extends AppCompatActivity {
         //contains a single hashmap which pairs a location to a LatLng
         sharedInfo = db.collection("SharedInfo");
         sharedMap = sharedInfo.document(KEY_LOCATION_MAP);
-        sharedMap.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                DocumentSnapshot documentSnapshot = task.getResult();
-                if (documentSnapshot.exists()) {
-                    locationMap = documentSnapshot.toObject(HashMap.class);
-                    Bundle extras = new Bundle();
-                    extras.putSerializable("HashMap",locationMap);
-                    Intent intent = new Intent();
-                    intent.putExtras(extras);
-                }
-            }
-        });
 
         //Assigning stuff for autocomplete for subjects
         AutoCompleteTextView courseSubject = (AutoCompleteTextView) findViewById(R.id.courseSearchSubject);

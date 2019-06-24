@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,8 +18,10 @@ import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.example.scheduleapp.LocationsMap;
 import com.example.scheduleapp.Objects.CourseInfo;
 import com.example.scheduleapp.Objects.HttpGetRequest;
+import com.example.scheduleapp.Objects.Location;
 import com.example.scheduleapp.Objects.Schedule;
 import com.example.scheduleapp.R;
 import com.example.scheduleapp.SelectedSchedule;
@@ -40,6 +43,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.android.volley.VolleyLog.TAG;
+
 public class CourseSearchAdapter extends RecyclerView.Adapter<CourseSearchAdapter.ViewHolder> {
 
     private List<CourseInfo> listItems;
@@ -59,9 +64,8 @@ public class CourseSearchAdapter extends RecyclerView.Adapter<CourseSearchAdapte
     private JsonParser parser = new JsonParser();
     Context context;
     private static final String KEY_LOCATION_MAP = "Schedule Locations";
-    private CollectionReference sharedInfo;
-    private DocumentReference sharedMap;
-    private HashMap<String, LatLng> locationMap;
+    private CollectionReference sharedLocations;
+    private HashMap<String, Location> locationMap;
 
     public CourseSearchAdapter(List<CourseInfo> listItems, Activity mActivity) {
         this.listItems = listItems;
@@ -74,12 +78,7 @@ public class CourseSearchAdapter extends RecyclerView.Adapter<CourseSearchAdapte
         FirebaseUser user = mAuth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
         //contains a single hashmap which pairs a location to a LatLng
-        sharedInfo = db.collection("SharedInfo");
-        sharedMap = sharedInfo.document(KEY_LOCATION_MAP);
-        Bundle bundle = mActivity.getIntent().getExtras();
-        if(bundle != null) {
-            locationMap =(HashMap) bundle.getSerializable("HashMap");
-        }
+        sharedLocations = db.collection("SharedLocations");
     }
 
     @Override
@@ -261,25 +260,30 @@ public class CourseSearchAdapter extends RecyclerView.Adapter<CourseSearchAdapte
 
     public double approxTime(CourseInfo a, CourseInfo b) {
         if (locationMap == null) {
-            Bundle bundle = mActivity.getIntent().getExtras();
-            if(bundle != null) {
-                locationMap = (HashMap<String, LatLng>) bundle.getSerializable("HashMap");
-            } else {
-                locationMap = new HashMap<>();
-            }
+            locationMap = (HashMap<String, Location>) LocationsMap.getInstance().getLocationsMap();
         }
-        LatLng coor1 = locationMap.get(a.getLocation());
-        LatLng coor2 = locationMap.get(b.getLocation());
+        LatLng coor1 = null;
+        LatLng coor2 = null;
+        try {
+            coor1 = locationMap.get(a.getLocation()).returnLatLng();
+            coor2 = locationMap.get(b.getLocation()).returnLatLng();
+        } catch (Exception e) {
+            Log.d(TAG, "it's intended if its null pointer: " + e.getMessage());
+        }
         if (coor1 == null || coor2 == null) {
             if (coor1 == null) {
                 coor1 = convertToLatLng(a);
-                locationMap.put(a.getLocation(), coor1);
+                Location location = new Location(a.getLocation(), coor1);
+                locationMap.put(a.getLocation(), location);
+                sharedLocations.document(a.getLocation()).set(location);
             }
             if (coor2 == null) {
                 coor2 = convertToLatLng(b);
-                locationMap.put(b.getLocation(), coor2);
+                Location loc2 = new Location(b.getLocation(), coor2);
+                locationMap.put(b.getLocation(), loc2);
+                sharedLocations.document(b.getLocation()).set(loc2);
             }
-            sharedMap.set(locationMap);
+            LocationsMap.getInstance().setLocationsMap(locationMap);
         }
         double dist = haversineDist(coor1, coor2);
         double time = (dist/walkingSpeed)*timeMultiplier;
@@ -298,7 +302,7 @@ public class CourseSearchAdapter extends RecyclerView.Adapter<CourseSearchAdapte
                 + Math.sin(longDist/2) * Math.sin(longDist/2);
         double y = 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1-x));
         double radius = 6371000;
-        return  x * radius;
+        return  y * radius;
     }
 
     public void setWalkingSpeed(double input) {
