@@ -100,6 +100,7 @@ public class CourseSearchAdapter extends RecyclerView.Adapter<CourseSearchAdapte
         viewHolder.txtViewCRN.setText(item.getCrn());
         if (item.checkForInterference(scheduleInProgress.getClassList())) {
             viewHolder.linearLayout.setBackgroundColor(Color.parseColor("#FF0000"));
+            Log.d(TAG, "onBindViewHolder: There is interference");
         } else {
             ArrayList<CourseInfo> nearestClasses = item.getNearestClasses(scheduleInProgress.getClassList());
             double maxTime;
@@ -116,12 +117,13 @@ public class CourseSearchAdapter extends RecyclerView.Adapter<CourseSearchAdapte
                     default:
                         maxTime = 30;
                 }
+                Log.d(TAG, "onBindViewHolder: maxTime value:" + maxTime);
                 if (maxTime >= 12) {
                     viewHolder.linearLayout.setBackgroundColor(Color.parseColor("#FF0000"));
                 } else if (maxTime >= 8) {
                     viewHolder.linearLayout.setBackgroundColor(Color.parseColor("#FFFF00"));
                 } else {
-                    viewHolder.linearLayout.setBackgroundColor(Color.parseColor("#0000FF"));
+                    viewHolder.linearLayout.setBackgroundColor(Color.parseColor("#00FF00"));
                 }
             }
         }
@@ -286,6 +288,7 @@ public class CourseSearchAdapter extends RecyclerView.Adapter<CourseSearchAdapte
             LocationsMap.getInstance().setLocationsMap(locationMap);
         }
         double dist = haversineDist(coor1, coor2);
+        Log.d(TAG, "approxTime: Haversine dist: "+dist);
         double time = (dist/walkingSpeed)*timeMultiplier;
         int minutes = (int) time/60;
         int seconds = (int) (time-minutes*60);
@@ -299,7 +302,7 @@ public class CourseSearchAdapter extends RecyclerView.Adapter<CourseSearchAdapte
         double latDist = Math.toRadians(b.latitude - a.latitude);
         double longDist = Math.toRadians(b.longitude - a.longitude);
         double x = Math.sin(latDist/2) * Math.sin(latDist/2) + Math.cos(lat1Rad) * Math.cos(lat2Rad)
-                + Math.sin(longDist/2) * Math.sin(longDist/2);
+                * Math.sin(longDist/2) * Math.sin(longDist/2);
         double y = 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1-x));
         double radius = 6371000;
         return  y * radius;
