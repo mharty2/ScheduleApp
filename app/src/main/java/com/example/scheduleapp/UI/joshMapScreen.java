@@ -162,11 +162,13 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
         }
         getCurrentDayList();
         if (currentDayList != null && currentDayList.size()>1) {
-            double lat1 = parseLat(getGeocodeJson(counter));
-            double lng1 = parseLong(getGeocodeJson(counter));
+            JsonObject firstLoc = getGeocodeJson(counter);
+            JsonObject secondLoc = getGeocodeJson(counter + 1);
+            double lat1 = parseLat(firstLoc);
+            double lng1 = parseLong(firstLoc);
             LatLng firstLocation = new LatLng(lat1, lng1);
-            double lat2 = parseLat(getGeocodeJson(counter + 1));
-            double lng2 = parseLong(getGeocodeJson(counter + 1));
+            double lat2 = parseLat(secondLoc);
+            double lng2 = parseLong(secondLoc);
             //Log.d(TAG, "updateMap lat1, lng1, lat2, lng2: " + lat1 + " " + lng1 + " " + lat2 + " " + lng2);
             LatLng secondLocation = new LatLng(lat2, lng2);
             Marker marker1 = mMap.addMarker(new MarkerOptions()
@@ -283,7 +285,6 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
             Log.d(TAG, "getCurrentDayList: Reached");
             Spinner spinner = (Spinner) findViewById(R.id.joshMapScreenDaySpin);
             String currentDay = spinner.getSelectedItem().toString();
-            Log.d(TAG, "schedule: " + schedule);
             Log.d(TAG, "currentDay: " + currentDay);
             if (currentDay.equals("Monday")) {
                 currentDayList = schedule.getMonday();
@@ -317,26 +318,6 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
         return toReturn;
     }
 
-    //Parsing functions
-    private JsonObject getDistanceMatrixJson() {
-        Log.d(TAG, "getDistanceMatrixJson: Reached");
-        String urlStart = "https://maps.googleapis.com/maps/api/distancematrix/json?mode=walking";
-        String urlOrigins = "&origins=" + checkForSpacesAndEtc(currentDayList.get(counter).getLocation());
-        String urlDestinations = "&destinations=" + checkForSpacesAndEtc(currentDayList.get(counter + 1).getLocation());
-        String urlEnd = "&key=" + getString(R.string.google_maps_key);
-        String urlTotal = urlStart + urlOrigins + urlDestinations + urlEnd;
-        //Toast.makeText(joshMapScreen.this, "Url used: " + urlTotal, Toast.LENGTH_SHORT);
-        Log.d(TAG, "getDistanceMatrixJson total url used: " + urlTotal);
-        HttpGetRequest getRequest = new HttpGetRequest();
-        try {
-            Log.d(TAG, "getDistanceMatrixJson: JsonObject successfully returned");
-            return parser.parse(getRequest.execute(urlTotal).get()).getAsJsonObject();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     private JsonObject getGeocodeJson(int index) {
         Log.d(TAG, "getGeocodeJson: Reached");
         String urlStart = "https://maps.googleapis.com/maps/api/geocode/json?address=";
@@ -349,25 +330,6 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
         try {
             return parser.parse(getRequest.execute(urlTotal).get()).getAsJsonObject();
         } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    //toDo safe delete?
-    private String parseDistanceTime(JsonObject toParse) {
-        Log.d(TAG, "parseDistanceTime: Reached");
-        try {
-            Log.d(TAG, "parseDistanceTime: Parsing started");
-            JsonArray rows = toParse.getAsJsonArray("rows");
-            JsonObject object = rows.get(0).getAsJsonObject();
-            JsonArray elements = object.get("elements").getAsJsonArray();
-            JsonObject object2 = elements.get(0).getAsJsonObject();
-            JsonObject duration = object2.get("duration").getAsJsonObject();
-            Log.d(TAG, "parseDistanceTime: Parsing ended");
-            return duration.get("text").getAsString();
-        } catch (Exception e) {
-            Log.d(TAG, "parseDistanceTime: Parsing error");
             e.printStackTrace();
         }
         return null;
