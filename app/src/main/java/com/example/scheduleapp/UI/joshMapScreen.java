@@ -320,9 +320,10 @@ public class joshMapScreen extends AppCompatActivity implements OnMapReadyCallba
 
     private JsonObject getGeocodeJson(int index) {
         Log.d(TAG, "getGeocodeJson: Reached");
+        String bounds = "&bounds=40.090634, -88.245812|40.116418, -88.219365";
         String urlStart = "https://maps.googleapis.com/maps/api/geocode/json?address=";
         String urlAddress = checkForSpacesAndEtc(currentDayList.get(index).getLocation() + " University of Illinois at Urbana Champaign");
-        String urlEnd = "&key=" + getString(R.string.google_maps_key);
+        String urlEnd = bounds + "&key=" + getString(R.string.google_maps_key);
         String urlTotal = urlStart + urlAddress + urlEnd;
         Toast.makeText(joshMapScreen.this, "Url used: " + urlTotal, Toast.LENGTH_SHORT);
         Log.d(TAG, "getGeocodeJson total url used: " + urlTotal);
