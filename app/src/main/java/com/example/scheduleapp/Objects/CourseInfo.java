@@ -2,6 +2,7 @@ package com.example.scheduleapp.Objects;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -186,8 +187,10 @@ public class CourseInfo implements Parcelable {
         if (courseList == null || courseList.size() == 0) {
             return new ArrayList<>();
         }
-        if (courseList.size() < 2) {
-            for (char c : getDaysAsChars()) {
+        if (courseList.size() == 1) {
+            String days = getDays().trim();
+            for (int i = 0; i < days.length(); i++) {
+                char c = days.charAt(i);
                 if (courseList.get(0).getDays().indexOf(c) > -1) {
                     HashSet<CourseInfo> set = new HashSet<>();
                     set.addAll(courseList);
@@ -196,40 +199,54 @@ public class CourseInfo implements Parcelable {
                     return toReturn;
                 }
             }
+            return new ArrayList<>();
         }
         HashSet<CourseInfo> toReturn = new HashSet<>();
         HashSet<CourseInfo> temp = new HashSet<>();
         Time thisTime = new Time(time);
-        Time otherTime = new Time(courseList.get(0).getTime());
-        double minTimeBetween = thisTime.getTimeBetween(otherTime);
-        toReturn.add(courseList.get(0));
-        for (CourseInfo course : courseList) {
-            for (char c : getDaysAsChars()) {
+        String days = getDays().trim();
+        for (int i = 0; i < days.length(); i++) {
+            char c = days.charAt(i);
+            double minTimeBetween = 100.0; //arbitrary number so stupid IDE error goes away. variable should always
+            // be initialized in the temp.size check
+            for (CourseInfo course : courseList) {
+                Time otherTime = new Time(course.getTime());
                 if (course.getDays().indexOf(c) > -1) {
-                    otherTime = new Time(course.getTime());
-                    if (minTimeBetween > thisTime.getTimeBetween(otherTime)) {
-                        minTimeBetween = thisTime.getTimeBetween((otherTime));
-                        toReturn.clear();
-                        toReturn.add(course);
-                    } else if (Math.abs(minTimeBetween - thisTime.getTimeBetween(otherTime)) < 1) {
-                        toReturn.add(course);
+                    if (temp.size() == 0) {
+                        minTimeBetween = thisTime.getTimeBetween(otherTime);
+                        temp.add(course);
+                    } else {
+                        if (minTimeBetween > thisTime.getTimeBetween(otherTime)) {
+                            minTimeBetween = thisTime.getTimeBetween((otherTime));
+                            temp.clear();
+                            temp.add(course);
+                        } else if (Math.abs(minTimeBetween - thisTime.getTimeBetween(otherTime)) < 5) { //can change threshold
+                            temp.add(course);
+                        }
                     }
                 }
             }
-            temp.addAll(toReturn);
+            toReturn.addAll(temp);
+            temp.clear();
         }
         ArrayList<CourseInfo> list = new ArrayList<>();
-        list.addAll(temp);
+        list.addAll(toReturn);
         return list;
     }
 
     public boolean checkForInterference(ArrayList<CourseInfo> list) {
-        Time thisTime = new Time(getTime());
-        for (CourseInfo course : list) {
-            Time otherTime = new Time(course.getTime());
-            if (thisTime.checkTimeInterference(otherTime)) {
-                return true;
+        String days = getDays().trim();
+        for (int i = 0; i < days.length(); i++) {
+            Time thisTime = new Time(getTime());
+            for (CourseInfo course : list) {
+                if (course.getDays().indexOf(days.charAt(i)) > -1) {
+                    Time otherTime = new Time(course.getTime());
+                    if (thisTime.checkTimeInterference(otherTime)) {
+                        return true;
+                    }
+                }
             }
+
         }
         return false;
     }

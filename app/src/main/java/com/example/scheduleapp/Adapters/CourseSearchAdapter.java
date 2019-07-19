@@ -100,30 +100,30 @@ public class CourseSearchAdapter extends RecyclerView.Adapter<CourseSearchAdapte
         viewHolder.txtViewCRN.setText(item.getCrn());
         if (item.checkForInterference(scheduleInProgress.getClassList())) {
             viewHolder.linearLayout.setBackgroundColor(Color.parseColor("#FF0000"));
-            Log.d(TAG, "onBindViewHolder: There is interference");
+            Log.d(TAG, "onBindViewHolder: There is interference with" + item.getSection());
         } else {
             ArrayList<CourseInfo> nearestClasses = item.getNearestClasses(scheduleInProgress.getClassList());
-            double maxTime;
+            double maxTimeToWalk;
             if (nearestClasses != null) {
                 switch (nearestClasses.size()) {
                     case 0:
-                        maxTime = 30;
+                        maxTimeToWalk = 0;
                         break;
                     case 1:
-                        maxTime = approxTime(item, nearestClasses.get(0));
+                        maxTimeToWalk = approxTime(item, nearestClasses.get(0));
                         break;
                     default:
-                        maxTime = 0;
+                        maxTimeToWalk = 0;
                         for (CourseInfo course : nearestClasses) {
-                            if (approxTime(item, course) > maxTime) {
-                                maxTime = approxTime(item, course);
+                            if (approxTime(item, course) > maxTimeToWalk) {
+                                maxTimeToWalk = approxTime(item, course);
                             }
                         }
                 }
-                Log.d(TAG, "onBindViewHolder: maxTime value:" + maxTime);
-                if (maxTime >= 12) {
+                Log.d(TAG, "onBindViewHolder: maxTime value:" + maxTimeToWalk);
+                if (maxTimeToWalk >= 12) {
                     viewHolder.linearLayout.setBackgroundColor(Color.parseColor("#FF0000"));
-                } else if (maxTime >= 8) {
+                } else if (maxTimeToWalk >= 8) {
                     viewHolder.linearLayout.setBackgroundColor(Color.parseColor("#FFFF00"));
                 } else {
                     viewHolder.linearLayout.setBackgroundColor(Color.parseColor("#00FF00"));
